@@ -6,4 +6,4 @@
 	url = https://github.com/dcnieho/FreeGLUT
 [submodule "libby-city/vendor/glew"]
 	path = libby-city/vendor/glew
-	url = https://github.com/nigels-com/glew
+	url = https://github.com/Perlmint/glew-cmake
