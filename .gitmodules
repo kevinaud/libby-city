@@ -1,0 +1,9 @@
+[submodule "project/vendor/glui"]
+	path = project/vendor/glui
+	url = https://github.com/libglui/glui
+[submodule "project/vendor/FreeGLUT"]
+	path = project/vendor/FreeGLUT
+	url = https://github.com/dcnieho/FreeGLUT
+[submodule "project/vendor/glew"]
+	path = project/vendor/glew
+	url = https://github.com/nigels-com/glew
