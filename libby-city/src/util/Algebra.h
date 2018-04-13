@@ -357,28 +357,28 @@ inline Point operator+(const Point& v, const Point& p) {
 	Point t;
 	t[0] = p[0] + v[0];  t[1] = p[1] + v[1];  t[2] = p[2] + v[2];  t[3] = p[3];
 	return t;
-};
+}
 
 // This adds a vector to a point, and returns the resultant point
 inline Point operator+(const Vector& v, const Point& p) {
 	Point t;
 	t[0] = p[0] + v[0];  t[1] = p[1] + v[1];  t[2] = p[2] + v[2];  t[3] = p[3];
 	return t;
-};
+}
 
 // This does the same.
 inline Point operator+(const Point& p, const Vector& v) {
 	Point t;
 	t[0] = p[0] + v[0];  t[1] = p[1] + v[1];  t[2] = p[2] + v[2];  t[3] = p[3];
 	return t;
-};
+}
 
 // This adds two vectors, and returns the resultant one
 inline Vector operator+(const Vector& v1, const Vector& v2) {
 	Vector t;
 	t[0] = v1[0] + v2[0];  t[1] = v1[1] + v2[1];  t[2] = v1[2] + v2[2];  t[3] = v1[3] + v2[3];
 	return t;
-};
+}
 
 // Note: no (point + point) operator
 
@@ -389,14 +389,14 @@ inline Point operator-(const Point& p, const Vector& v) {
 	Point t;
 	t[0] = p[0] - v[0];  t[1] = p[1] - v[1];  t[2] = p[2] - v[2];  t[3] = p[3];
 	return t;
-};
+}
 
 // This returns the negated Point
 inline Point operator-(const Point& v) {
 	Point t;
 	t[0] = v[0] * -1;  t[1] = v[1] * -1;  t[2] = v[2] * -1;  t[3] = 1;
 	return t;
-};
+}
 
 
 // This returns the negated vector
@@ -404,21 +404,21 @@ inline Vector operator-(const Vector& v) {
 	Vector t;
 	t[0] = v[0] * -1;  t[1] = v[1] * -1;  t[2] = v[2] * -1;  t[3] = 0;
 	return t;
-};
+}
 
 // This subtracts the second vector from the first, and returns the resultant.
 inline Vector operator-(const Vector& v1, const Vector& v2) {
 	Vector t;
 	t[0] = v1[0] - v2[0];  t[1] = v1[1] - v2[1];  t[2] = v1[2] - v2[2];  t[3] = 0;
 	return t;
-};
+}
 
 // This returns the vector spanning point 1 and point 2
 inline Vector operator-(const Point& p1, const Point& p2) {
 	Vector t;
 	t[0] = p1[0] - p2[0];  t[1] = p1[1] - p2[1];  t[2] = p1[2] - p2[2];  t[3] = 0;
 	return t;
-};
+}
 
 // Note: no (vector - point) or (- point) operators
 
@@ -431,20 +431,20 @@ inline Point operator*(const double s, const Point& v) {
 	Point t;
 	t[0] = v[0] * s;  t[1] = v[1] * s;  t[2] = v[2] * s;  t[3] = 0;
 	return t;
-};
+}
 
 inline Point operator*(const Point& v, const double s) {
 	Point t;
 	t[0] = v[0] * s;  t[1] = v[1] * s;  t[2] = v[2] * s;  t[3] = 0;
 	return t;
-};
+}
 
 
 inline Point operator/(const Point& v, const double s) {
 	Point t;
 	t[0] = v[0] / s;  t[1] = v[1] / s;  t[2] = v[2] / s;  t[3] = 0;
 	return t;
-};
+}
 
 
 // This divides a vector by a scalar
@@ -452,21 +452,21 @@ inline Vector operator/(const Vector& v, const double s) {
 	Vector t;
 	t[0] = v[0] / s;  t[1] = v[1] / s;  t[2] = v[2] / s;  t[3] = 0;
 	return t;
-};
+}
 
 // This should multiply the vector by the scalar, returning a vector
 inline Vector operator*(const double s, const Vector &v) {
 	Vector t;
 	t[0] = v[0] * s;  t[1] = v[1] * s;  t[2] = v[2] * s;  t[3] = 0;
 	return t;
-};
+}
 
 // This does the same.
 inline Vector operator*(Vector& v, const double s) {
 	Vector t;
 	t[0] = v[0] * s;  t[1] = v[1] * s;  t[2] = v[2] * s;  t[3] = 0;
 	return t;
-};
+}
 
 
 
@@ -480,7 +480,7 @@ inline Point operator*(const Matrix& m, const Point& p) {
 	t[2] = p[0] * m(2, 0) + p[1] * m(2, 1) + p[2] * m(2, 2) + p[3] * m(2, 3);
 	t[3] = p[0] * m(3, 0) + p[1] * m(3, 1) + p[2] * m(3, 2) + p[3] * m(3, 3);
 	return t;
-};
+}
 
 // Applies the matrix to the vector, returns the new vector.
 inline Vector operator*(const Matrix& m, const Vector& v) {
@@ -490,7 +490,7 @@ inline Vector operator*(const Matrix& m, const Vector& v) {
 	t[2] = v[0] * m(2, 0) + v[1] * m(2, 1) + v[2] * m(2, 2);
 	t[3] = 0;
 	return t;
-};
+}
 
 // Multiplies two matrices together, returns the resultant matrix
 inline Matrix operator*(const Matrix& m1, const Matrix& m2) {
@@ -515,7 +515,7 @@ inline Matrix operator*(const Matrix& m1, const Matrix& m2) {
 		m1(3, 0)*m2(0, 2) + m1(3, 1)*m2(1, 2) + m1(3, 2)*m2(2, 2) + m1(3, 3)*m2(3, 2),
 		m1(3, 0)*m2(0, 3) + m1(3, 1)*m2(1, 3) + m1(3, 2)*m2(2, 3) + m1(3, 3)*m2(3, 3));
 	return t;
-};
+}
 
 
 
@@ -525,7 +525,7 @@ inline Matrix operator*(const Matrix& m1, const Matrix& m2) {
 inline double length(const Vector& v) {
 	double d = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 	return d;
-};
+}
 
 
 // --- Vector dot and cross products
@@ -534,7 +534,7 @@ inline double length(const Vector& v) {
 inline double dot(const Vector& u, const Vector& v) {
 	double d = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
 	return d;
-};
+}
 
 inline double angle(const Vector& u, const Vector& v) {
 	double result = dot(u, v) / (length(u) * length(v));
@@ -547,7 +547,7 @@ inline double angle(const Vector& u, const Vector& v) {
 inline Vector cross(const Vector& u, const Vector& v) {
 	Vector t(u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]);
 	return t;
-};
+}
 
 
 // --- Unit length vector pointing in the same direction
@@ -557,7 +557,7 @@ inline Vector normalize(Vector& v) {
 	Vector t(v);
 	t.normalize();
 	return t;
-};
+}
 
 // Transforms --------------------------------------------------------
 
@@ -567,7 +567,7 @@ inline Matrix transpose(const Matrix& m) {
 		m(0, 2), m(1, 2), m(2, 2), m(3, 2),
 		m(0, 3), m(1, 3), m(2, 3), m(3, 3));
 	return t;
-};
+}
 
 // returns a scaling transformation matrix, which will scale by the vector v
 inline Matrix scale_mat(const Vector& v) {
@@ -576,7 +576,7 @@ inline Matrix scale_mat(const Vector& v) {
 		0, 0, v[2], 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns a translaion matrix, which will translate by the vector v 
 inline Matrix trans_mat(const Vector& v) {
@@ -585,7 +585,7 @@ inline Matrix trans_mat(const Vector& v) {
 		0, 0, 1, v[2],
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // returns a rotation matrix effecting a rotation around the X axis by 
 // specified radians
@@ -597,7 +597,7 @@ inline Matrix rotX_mat(const double radians) {
 		0, sin_r, cos_r, 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns a rotation matrix effecting rotation around the Y axis
 inline Matrix rotY_mat(const double radians) {
@@ -608,7 +608,7 @@ inline Matrix rotY_mat(const double radians) {
 		-sin_r, 0, cos_r, 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns a rotation matrix effecting rotation around the Z axis
 inline Matrix rotZ_mat(double radians) {
@@ -619,7 +619,7 @@ inline Matrix rotZ_mat(double radians) {
 		0, 0, 1, 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns a rotation matrix effecting a rotation around the given vector and
 // point, by the specified number of radians.
@@ -653,7 +653,7 @@ inline Matrix rot_mat(Vector &v, double a){
 
 		0, 0, 0, 1.0)
 		);
-};
+}
 
 inline Matrix rot_mat(Point  &p, Vector &v, double a){
 	Vector nv = normalize(v);
@@ -684,7 +684,7 @@ inline Matrix rot_mat(Point  &p, Vector &v, double a){
 
 		0, 0, 0, 1.0)
 		* trans_mat(Vector(-p[0], -p[1], -p[2])));
-};
+}
 
 // Returns the inverse matrix of scale_mat()
 inline Matrix inv_scale_mat(const Vector &v) {
@@ -699,7 +699,7 @@ inline Matrix inv_scale_mat(const Vector &v) {
 		Matrix m;
 		return m;
 	}
-};
+}
 
 // Returns the inverse matrix of trans_may()
 inline Matrix inv_trans_mat(const Vector &v) {
@@ -708,7 +708,7 @@ inline Matrix inv_trans_mat(const Vector &v) {
 		0, 0, 1, -v[2],
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns the inverse matrix of rotX_mat()
 inline Matrix inv_rotX_mat(const double radians){
@@ -719,7 +719,7 @@ inline Matrix inv_rotX_mat(const double radians){
 		0, sin_r, cos_r, 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns the inverse matrix of rotY_mat()
 inline Matrix inv_rotY_mat(const double radians){
@@ -730,7 +730,7 @@ inline Matrix inv_rotY_mat(const double radians){
 		-sin_r, 0, cos_r, 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 // Returns the inverse matrix of rotZ_mat()
 inline Matrix inv_rotZ_mat(double radians){
@@ -741,7 +741,7 @@ inline Matrix inv_rotZ_mat(double radians){
 		0, 0, 1, 0,
 		0, 0, 0, 1);
 	return m;
-};
+}
 
 
 inline static void addRowToRow(double* mat, int row1, int row2) {
@@ -749,21 +749,21 @@ inline static void addRowToRow(double* mat, int row1, int row2) {
 	mat[row2 + 4] += mat[row1 + 4];
 	mat[row2 + 8] += mat[row1 + 8];
 	mat[row2 + 12] += mat[row1 + 12];
-};
+}
 
 inline static void subMultRow(double* mat, int row1, int row2, double mult) {
 	mat[row2] -= mult * mat[row1];
 	mat[row2 + 4] -= mult * mat[row1 + 4];
 	mat[row2 + 8] -= mult * mat[row1 + 8];
 	mat[row2 + 12] -= mult * mat[row1 + 12];
-};
+}
 
 inline static void multRow(double* mat, int row, double mult)  {
 	mat[row] *= mult;
 	mat[row + 4] *= mult;
 	mat[row + 8] *= mult;
 	mat[row + 12] *= mult;
-};
+}
 
 
 inline Matrix invert(const Matrix& matrix) {
@@ -816,6 +816,6 @@ inline Matrix invert(const Matrix& matrix) {
 inline Matrix inv_rot_mat(Point &p, Vector &v, double a){
 	Matrix m = rot_mat(p, v, a);
 	return (invert(m));
-};
+}
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Algebra.h"
+#include "../util/Algebra.h"
 
 class Camera {
     public:

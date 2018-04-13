@@ -1,8 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include <GL/glui.h>
-#include "Algebra.h"
+#include "../util/Algebra.h"
 
 class Shape {
 public:

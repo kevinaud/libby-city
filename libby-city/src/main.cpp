@@ -1,12 +1,12 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/glui.h>
-#include "Shape.h"
-#include "Cube.h"
-#include "Cylinder.h"
-#include "Cone.h"
-#include "Sphere.h"
-#include "Camera.h"
+#include "shapes/Shape.h"
+#include "shapes/Cube.h"
+#include "shapes/Cylinder.h"
+#include "shapes/Cone.h"
+#include "shapes/Sphere.h"
+#include "camera/Camera.h"
 
 enum OBJ_TYPE {
 	SHAPE_CUBE = 0,
@@ -97,9 +97,6 @@ void myGlutIdle(void)
 
 void myGlutReshape(int x, int y)
 {
-	float xy_aspect;
-
-	xy_aspect = (float)x / (float)y;
 	glViewport(0, 0, x, y);
 
 	camera->SetScreenSize(x, y);
