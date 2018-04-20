@@ -235,10 +235,7 @@ int main(int argc, char* argv[])
 	///*          Enable z-buferring          */
 	///****************************************/
 
-
 	glPolygonOffset(1, 1);
-
-
 
 	/****************************************/
 	/*         Here's the GLUI code         */
