@@ -1,3 +1,5 @@
+#include <iostream>
+#include <cmath>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/glui.h>
@@ -17,6 +19,9 @@ enum OBJ_TYPE {
 	SHAPE_SPECIAL2 = 5,
 	SHAPE_SPECIAL3 = 6
 };
+
+int screenWidth = 500;
+int screenHeight = 500;
 
 /** These are the live variables passed into GLUI ***/
 int  wireframe = 1;
@@ -41,10 +46,19 @@ float lookY = -2;
 float lookZ = -2;
 float clipNear = 0.001;
 float clipFar = 30;
+float upX = 0.0;
+float upY = 1.0;
+float upZ = 0.0;
 
+/**
+ * keyboard and mouse movement variables
+ */
+// tracks which keys are being held down
+GLboolean keysInUse[512]; 
+// tracks if the camera is rotating in +/- x, +/- y direction (from camera perspective)
+int rotationDirection[2] = { 0, 0 }; 
 
 int  main_window;
-
 
 /** these are the global variables used for rendering **/
 OBJ_TYPE objType = SHAPE_CUBE;
@@ -99,9 +113,132 @@ void myGlutReshape(int x, int y)
 {
 	glViewport(0, 0, x, y);
 
+    screenWidth = x;
+    screenHeight = y;
 	camera->SetScreenSize(x, y);
 
 	glutPostRedisplay();
+}
+
+void mouseMoveHandler(int x, int y) {
+    if ((screenWidth - x) > (0.9 * screenWidth)) {        // rotate left
+        rotationDirection[0] = -1;
+        std::cout << "rotate left" << std::endl;
+    } else if ((screenWidth - x) < (0.1 * screenWidth)) { // rotate right
+        rotationDirection[0] = 1;
+        std::cout << "rotate right" << std::endl;
+    } else {                                              // dont rotate left or right
+        rotationDirection[0] = 0;
+    }
+
+    if ((screenHeight - y) > (0.9 * screenHeight)) {        // rotate up
+        rotationDirection[1] = -1;
+    } else if ((screenHeight - y) < (0.1 * screenHeight)) { // rotate down
+        rotationDirection[1] = 1;
+    } else {                                              // dont rotate up or down
+        rotationDirection[1] = 0;
+    }
+
+}
+
+void keyPressHandler(unsigned char key, int x, int y) {
+    if (key >= 0 && key < 512) {
+        keysInUse[key] = true;
+    }
+    /* camera->keyPressHandler(key, x, y); */
+}
+
+void keyReleaseHandler(unsigned char key, int x, int y) {
+    if (key >= 0 && key < 512) {
+        keysInUse[key] = false;
+    }
+    /* camera->keyReleaseHandler(key, x, y); */
+}
+
+void updateCameraPos(int deltaTime) {
+
+	Point eyeP(eyeX, eyeY, eyeZ);
+
+	Vector look = camera->GetLookVector();
+
+    Vector dirX(look[0], 0, 0);
+    Vector dirY(0, look[1], 0);
+    Vector dirZ(0, 0, look[2]);
+
+    // Alter position in the appropriate direction
+    Vector fMovement(0.0, 0.0, 0.0);
+
+    if (keysInUse['w'])  // forward
+        fMovement = fMovement + dirZ;
+
+    if (keysInUse['s'])  // backward
+        fMovement = fMovement - dirZ;
+
+    if (keysInUse['a'])  // left
+        fMovement = fMovement + dirX;
+
+    if (keysInUse['d'])  // right
+        fMovement = fMovement - dirX;
+
+    if (keysInUse['e'])  // vertical up
+        fMovement = fMovement - dirY;
+
+    if (keysInUse['q'])  // vertical down
+        fMovement = fMovement + dirY;
+
+    fMovement = camera->getCamera2WorldMatrix() * fMovement;
+    GLfloat cMovementSpeed = 0.0005;
+
+    // Trick to balance PC speed with movement
+    GLfloat velocity = cMovementSpeed * deltaTime;
+
+    // Update camera position using the appropriate velocity
+    eyeP = eyeP + fMovement * velocity;
+
+    eyeX = eyeP[0];
+    eyeY = eyeP[1];
+    eyeZ = eyeP[2];
+
+    if (rotationDirection[1] != 0) {
+
+        float cs = cos(3.142 /180 * rotationDirection[1]);
+        float sn = sin(3.142 /180 * rotationDirection[1]);
+
+        Vector look1(0.0, 0.0, -1.0);
+        Vector up(0.0, 1.0, 0.0);
+
+        Vector old = look1;
+
+        Vector u(cs*old[0] - sn*up[0], cs*old[1] - sn*up[1], cs*old[2] - sn*up[2]);
+        Vector v(sn*old[0] + cs*up[0], sn*old[1] + cs*up[1], sn*old[2] + cs*up[2]) ;
+
+        Matrix transform = camera->getCamera2WorldMatrix();
+
+        u = transform * u;
+        v = transform * v;
+        
+        lookX = u[0];
+        lookY = u[1];
+        lookZ = u[2];
+
+        upX = v[0];
+        upY = v[1];
+        upZ = v[2];
+    }
+
+}
+
+void updateCameraLook(int deltaTime) {
+
+}
+
+int previousTime = 0;
+
+int calcDeltaTime() {
+    int current = glutGet(GLUT_ELAPSED_TIME);
+    int deltaTime = current - previousTime;
+    previousTime = current;
+    return deltaTime;
 }
 
 /***************************************** myGlutDisplay() *****************/
@@ -123,9 +260,14 @@ void myGlutDisplay(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+    int deltaTime = calcDeltaTime();
+    updateCameraPos(deltaTime);
+    updateCameraLook(deltaTime);
+
 	Point eyeP(eyeX, eyeY, eyeZ);
 	Vector lookV(lookX, lookY, lookZ);
-	Vector upV(0, 1, 0);
+	Vector upV(upX, upY, upZ);
+
 	camera->Orient(eyeP, lookV, upV);
 	camera->RotateV(camRotV);
 	camera->RotateU(camRotU);
@@ -202,11 +344,18 @@ int main(int argc, char* argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowPosition(50, 50);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(screenWidth, screenHeight);
 
 	main_window = glutCreateWindow("CSI 4341: Assignment 2");
 	glutDisplayFunc(myGlutDisplay);
 	glutReshapeFunc(myGlutReshape);
+
+    // register keyboard handlers
+    glutKeyboardFunc(keyPressHandler);
+    glutKeyboardUpFunc(keyReleaseHandler);
+    
+    // register mouse handlers
+    glutPassiveMotionFunc(mouseMoveHandler);
 
 	/****************************************/
 	/*       Set up OpenGL lighting         */
@@ -235,10 +384,7 @@ int main(int argc, char* argv[])
 	///*          Enable z-buferring          */
 	///****************************************/
 
-
 	glPolygonOffset(1, 1);
-
-
 
 	/****************************************/
 	/*         Here's the GLUI code         */

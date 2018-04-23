@@ -1,172 +1,165 @@
-/**
- * Author: Kevin Aud
- * Assignment: Program 2
- */
-
 #include "Camera.h"
 
 Camera::Camera() {
+	Reset();
 }
 
 Camera::~Camera() {
 }
 
-void Camera::Orient(Point& eye, Point& focus, Vector& up) {
-    this->eye = eye;
-    this->look = focus - eye;
-    this->up = up;
-    setCameraAxes();
+void Camera::Reset() {
+    Point p0 = Point(0, 0, DEFAULT_FOCUS_LENGTH);
+    Point p1 = Point(0, 0, 0);
+    Vector v = Vector(0, 1, 0);
+	Orient(p0, p1, v);
+	SetViewAngle(VIEW_ANGLE);
+	SetNearPlane(NEAR_PLANE);
+	SetFarPlane(FAR_PLANE);
+	m_screenWidthRatio = 1.0f;
 }
+
+void Camera::Orient(Point& eye, Point& focus, Vector& up) {
+	Vector lookVector(focus - eye);
+	Orient(eye, lookVector, up);
+}
+
 
 void Camera::Orient(Point& eye, Vector& look, Vector& up) {
-    this->eye = eye;
-    this->look = look;
-    this->up = up;
-    setCameraAxes();
+	Matrix orient;
+
+	Vector lookVector = normalize(look);
+	m_n = -lookVector;
+    Vector v = cross(lookVector, up);
+	m_u = normalize(v);
+	m_v = cross(m_n, m_u);
+
+	orient(0, 0) = m_u[0]; orient(0, 1) = m_u[1]; orient(0, 2) = m_u[2];
+	orient(1, 0) = m_v[0]; orient(1, 1) = m_v[1]; orient(1, 2) = m_v[2];
+	orient(2, 0) = m_n[0]; orient(2, 1) = m_n[1]; orient(2, 2) = m_n[2];
+
+	m_modelView = orient * inv_trans_mat(Vector(eye[0], eye[1], eye[2]));
+	m_invModelView = trans_mat(Vector(eye[0], eye[1], eye[2])) * transpose(orient);
 }
 
-void Camera::setCameraAxes() {
-    w = -1.0 * normalize(look);
-    Vector crossProduct = cross(up, w);
-    u = normalize(crossProduct);
-    v = cross(w, u);
+Matrix Camera::GetProjectionMatrix()
+{
+	double c = -m_nearPlane / m_farPlane;
+	Matrix unhingeM(1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, -1 / (c + 1), c / (c + 1),
+		0, 0, -1, 0);
+	Matrix perspective = unhingeM*GetScaleMatrix();
+
+	return perspective;
 }
 
-Matrix Camera::GetProjectionMatrix() {
-
-    double xScale = getAxisScale(widthAngle);
-    double yScale = getAxisScale(heightAngle);
-
-    // scaling of the x and y axes
-    Matrix m2(
-        xScale, 0,      0,          0, 
-        0,      yScale, 0,          0, 
-        0,      0,      1/farPlane, 0, 
-        0,      0,      0,          1
-    );
-
-    double c = -nearPlane / farPlane;
-    // Far scaling of the z axis
-    Matrix m1(
-        1, 0, 0,        0, 
-        0, 1, 0,        0, 
-        0, 0, -1/(c+1), c/(c+1), 
-        0, 0, -1,       0
-    );
-
-    Matrix result = m1 * m2;
-    return result;
+Matrix Camera::GetScaleMatrix() {
+	Matrix scaleM(1.0 / (tan(m_viewAngle * PI / 360.0)*m_farPlane*m_screenWidthRatio), 0, 0, 0,
+		0, 1.0 / (tan(m_viewAngle * PI / 360.0)*m_farPlane), 0, 0,
+		0, 0, 1.0 / m_farPlane, 0,
+		0, 0, 0, 1);
+	return scaleM;
 }
 
-double Camera::getAxisScale(double angle) {
-    return 1.0 / (tan(angle / 2) * farPlane);
+
+void Camera::SetViewAngle(double viewAngle) {
+	m_viewAngle = viewAngle;
+	m_filmPlanDepth = -1 / tan((m_viewAngle*RAD) / 2.0);
 }
 
-void Camera::SetViewAngle (double viewAngle) {
-    this->viewAngle = viewAngle;
-    this->widthAngle = DEG_TO_RAD(viewAngle);
-    this->heightAngle = DEG_TO_RAD(viewAngle / aspectRatio);
+void Camera::SetNearPlane(double nearPlane) {
+	m_nearPlane = nearPlane;
 }
 
-void Camera::SetNearPlane (double nearPlane) {
-    this->nearPlane = nearPlane;
+void Camera::SetFarPlane(double farPlane) {
+	m_farPlane = farPlane;
 }
 
-void Camera::SetFarPlane (double farPlane) {
-    this->farPlane = farPlane;
-}
-
-void Camera::SetScreenSize (int screenWidth, int screenHeight) {
-    this->screenHeight = screenHeight;
-    this->screenWidth = screenWidth;
-    this->aspectRatio = screenWidth / screenHeight;
+void Camera::SetScreenSize(int screenWidth, int screenHeight) {
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
+	m_screenWidthRatio = (double)m_screenWidth / (double)m_screenHeight;
+	//m_screenHeightRatio = (double)m_screenHeight/(double)m_screenHeight;
 }
 
 Matrix Camera::GetModelViewMatrix() {
-
-    // Rotation Matrix
-    Matrix m1(
-        u[0], u[1], u[2], 0,
-        v[0], v[1], v[2], 0,
-        w[0], w[1], w[2], 0,
-        0,    0,    0,    1
-    );
-
-    // Translation Matrix
-    Matrix m2(
-        1, 0, 0, -eye[0],
-        0, 1, 0, -eye[1],
-        0, 0, 1, -eye[2],
-        0, 0, 0, 1
-    );
-
-    Matrix result = m1 * m2;
-    return result;
+	return m_modelView;
 }
 
+//Matrix Camera::GetInvModelViewMatrix() {
+//	return m_invModelView;
+//}
+
 void Camera::RotateV(double angle) {
-    RotateAroundAxis(v, angle);
+	Rotate(GetEyePoint(), GetUpVector(), angle);
 }
 
 void Camera::RotateU(double angle) {
-    RotateAroundAxis(u, angle);
+	Rotate(GetEyePoint(), cross(GetLookVector(), GetUpVector()), angle);
 }
 
 void Camera::RotateW(double angle) {
-    RotateAroundAxis(w, angle);
-}
-
-void Camera::RotateAroundAxis(Vector axis, double angle) {
-    Matrix rotation = rot_mat(axis, DEG_TO_RAD(angle));
-    look = rotation * look;
-    up = rotation * up;
-
-    // update u, v, w since the look and up vectors have changed
-    setCameraAxes();
+	Rotate(GetEyePoint(), GetLookVector(), angle);
 }
 
 void Camera::Translate(const Vector &v) {
-    eye = eye + v;
+	m_invModelView = m_invModelView * trans_mat(v);
+	m_modelView = inv_trans_mat(v) * m_modelView;
 }
+
 
 void Camera::Rotate(Point p, Vector axis, double degrees) {
-    Matrix rotation = rot_mat(p, axis, DEG_TO_RAD(degrees));
-    eye = rotation * eye;
-    look = rotation * look;
-    up = rotation * up;
-
-    // update u, v, w since the look and up vectors have changed
-    setCameraAxes();
+	double angle = degrees * RAD;
+	m_invModelView = rot_mat(p, axis, angle) * m_invModelView;
+	m_modelView = m_modelView * inv_rot_mat(p, axis, angle);
 }
 
+
 Point Camera::GetEyePoint() {
-    return eye;
+	return Point(m_invModelView(0, 3), m_invModelView(1, 3), m_invModelView(2, 3));
 }
 
 Vector Camera::GetLookVector() {
-    return look;
+	return Vector(-m_invModelView(0, 2), -m_invModelView(1, 2), -m_invModelView(2, 2));
 }
 
 Vector Camera::GetUpVector() {
-    return up;
+	return Vector(m_invModelView(0, 1), m_invModelView(1, 1), m_invModelView(2, 1));
 }
 
 double Camera::GetViewAngle() {
-    return viewAngle;
+	return m_viewAngle;
 }
 
 double Camera::GetNearPlane() {
-    return nearPlane;
+	return m_nearPlane;
 }
 
 double Camera::GetFarPlane() {
-    return farPlane;
+	return m_farPlane;
 }
 
 int Camera::GetScreenWidth() {
-    return screenWidth;
+	return m_screenWidth;
 }
 
 int Camera::GetScreenHeight() {
-    return screenHeight;
+	return m_screenHeight;
+}
+
+double Camera::GetFilmPlanDepth() {
+	return m_filmPlanDepth;
+}
+
+double Camera::GetScreenWidthRatio() {
+	return m_screenWidthRatio;
+}
+
+void Camera::computeCamera2WorldMatrix() {
+	m_cam2World = invert(GetScaleMatrix() * m_modelView);
+}
+
+Matrix Camera::getCamera2WorldMatrix() {
+    computeCamera2WorldMatrix();
+	return m_cam2World;
 }
