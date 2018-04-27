@@ -10,6 +10,13 @@
 #include "shapes/Sphere.h"
 #include "camera/Camera.h"
 
+GLuint back;
+GLuint front;
+GLuint left;
+GLuint right;
+GLuint up;
+GLuint down;
+
 enum OBJ_TYPE {
 	SHAPE_CUBE = 0,
 	SHAPE_CYLINDER = 1,
@@ -121,24 +128,21 @@ void myGlutReshape(int x, int y)
 }
 
 void mouseMoveHandler(int x, int y) {
-    if ((screenWidth - x) > (0.9 * screenWidth)) {        // rotate left
-        rotationDirection[0] = -1;
-        std::cout << "rotate left" << std::endl;
-    } else if ((screenWidth - x) < (0.1 * screenWidth)) { // rotate right
+    if ((screenWidth - x) > (0.75 * screenWidth)) {        // rotate left
         rotationDirection[0] = 1;
-        std::cout << "rotate right" << std::endl;
+    } else if ((screenWidth - x) < (0.25 * screenWidth)) { // rotate right
+        rotationDirection[0] = -1;
     } else {                                              // dont rotate left or right
         rotationDirection[0] = 0;
     }
 
-    if ((screenHeight - y) > (0.9 * screenHeight)) {        // rotate up
+    if ((screenHeight - y) > (0.75 * screenHeight)) {        // rotate up
         rotationDirection[1] = -1;
-    } else if ((screenHeight - y) < (0.1 * screenHeight)) { // rotate down
+    } else if ((screenHeight - y) < (0.25 * screenHeight)) { // rotate down
         rotationDirection[1] = 1;
     } else {                                              // dont rotate up or down
         rotationDirection[1] = 0;
     }
-
 }
 
 void keyPressHandler(unsigned char key, int x, int y) {
@@ -199,6 +203,19 @@ void updateCameraPos(int deltaTime) {
     eyeY = eyeP[1];
     eyeZ = eyeP[2];
 
+    if (rotationDirection[0] != 0) {
+        Matrix rotMat = rotY_mat(3.142 /180 * rotationDirection[0]);
+        Matrix cam2World = camera->getCamera2WorldMatrix();
+
+        Vector look(0.0, 0.0, -1.0);
+        look = rotMat * look;
+        look = cam2World * look;
+
+        lookX = look[0];
+        lookY = look[1];
+        lookZ = look[2];
+    }
+
     if (rotationDirection[1] != 0) {
 
         float cs = cos(3.142 /180 * rotationDirection[1]);
@@ -245,7 +262,7 @@ int calcDeltaTime() {
 
 void myGlutDisplay(void)
 {
-	glClearColor(.9f, .9f, .9f, 1.0f);
+	/* glClearColor(.9f, .9f, .9f, 1.0f); */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	camera->SetViewAngle(viewAngle);
@@ -255,7 +272,6 @@ void myGlutDisplay(void)
 	glLoadIdentity();
 	Matrix projection = camera->GetProjectionMatrix();
 	glMultMatrixd(projection.unpack());
-
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -303,9 +319,9 @@ void myGlutDisplay(void)
 
     glEnable(GL_LIGHTING);
 	if (fill) {
-		glEnable(GL_POLYGON_OFFSET_FILL);
-		glColor3f(0.5, 0.5, 0.5);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		/* glEnable(GL_POLYGON_OFFSET_FILL); */
+		/* glColor3f(0.5, 0.5, 0.5); */
+		/* glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); */
 		shape->draw();
 	}
 	
@@ -331,11 +347,27 @@ void onExit()
 	delete sphere;
 }
 
+GLuint loadBMP(const char * imagepath);
+
 /**************************************** main() ********************/
 
 int main(int argc, char* argv[])
 {
 	atexit(onExit);
+
+	/****************************************/
+	/*         Load Skybox Textures         */
+	/****************************************/
+    back = loadBMP("../img/SkyboxSet1/SunSet/SunSetBack2048.bmp"); 
+    front = loadBMP("../img/SkyboxSet1/SunSet/SunSetFront2048.bmp"); 
+
+    left = loadBMP("../img/SkyboxSet1/SunSet/SunSetLeft2048.bmp"); 
+    right = loadBMP("../img/SkyboxSet1/SunSet/SunSetRight2048.bmp"); 
+
+    up = loadBMP("../img/SkyboxSet1/SunSet/SunSetUp2048.bmp"); 
+    down = loadBMP("../img/SkyboxSet1/SunSet/SunSetDown2048.bmp"); 
+
+    cube->setTexture(front);
 
 	/****************************************/
 	/*   Initialize GLUT and create window  */
@@ -369,16 +401,17 @@ int main(int argc, char* argv[])
         GLfloat diffuse[] = {0.5f, 0.5f, 0.5f, 0.0f};
         GLfloat ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
 
-        glLightfv (GL_LIGHT0, GL_AMBIENT, ambient);
-        glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse);
-        glLightfv (GL_LIGHT0, GL_POSITION, light_pos0);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT0, GL_POSITION, light_pos0);
 
-        glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-        glEnable (GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+        glEnable(GL_COLOR_MATERIAL);
 
         glEnable(GL_LIGHTING);
-        glEnable (GL_LIGHT0);
-        glEnable (GL_DEPTH_TEST);
+        glEnable(GL_LIGHT0);
+        glEnable(GL_DEPTH_TEST);
+
 
 	///****************************************/
 	///*          Enable z-buferring          */
@@ -464,5 +497,53 @@ int main(int argc, char* argv[])
 	return EXIT_SUCCESS;
 }
 
+GLuint loadBMP(const char * imagepath) {
+
+	GLuint texture;
+	int width = 2048, height = 2048;
+	unsigned char * data;
+
+	FILE * file;
+	file = fopen(imagepath, "rb");
+
+	if (file == NULL) {
+        return 0;
+	}
+
+	data = (unsigned char *)malloc( width * height * 3);
+	//int size = fseek(file,);
+	fread(data, width * height * 3, 1, file);
+	fclose(file);
+
+	for (int i = 0; i < width * height ; ++i) {
+		int index = i*3;
+		unsigned char B,R;
+		B = data[index];
+		R = data[index + 2];
+
+		data[index] = R;
+		data[index + 2] = B;
+	}
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	/* glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE); */
+	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST); */
+
+
+	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR); */
+	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT); */
+	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT); */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data);
+	free(data);
+
+	return texture;
+}
 
 
