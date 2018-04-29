@@ -65,8 +65,20 @@ GLuint initTexture(const char * imagepath)
 
 class Skybox : public Shape {
     public:
-        Skybox() {
-            std::cout << "construct" << std::endl;
+        Skybox(
+            char const * frontImgPath,
+            char const * backImgPath,
+            char const * rightImgPath,
+            char const * leftImgPath,
+            char const * upImgPath,
+            char const * downImgPath
+        ) {
+            this->frontImgPath = frontImgPath;
+            this->backImgPath = backImgPath;
+            this->rightImgPath = rightImgPath;
+            this->leftImgPath = leftImgPath;
+            this->upImgPath = upImgPath;
+            this->downImgPath = downImgPath;
         };
         ~Skybox() {};
 
@@ -75,17 +87,16 @@ class Skybox : public Shape {
         }
 
         void draw() {
-            std::cout << "draw" << std::endl;
             glEnable(GL_TEXTURE_2D);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             if (!initialized) {
-                front = initTexture("/home/kevin/classes/graphics/libby-city/libby-city/src/shapes/SunSetFront2048.bmp");
-                back = initTexture("/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetBack2048.bmp");
-                right = initTexture("/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetRight2048.bmp");
-                left = initTexture("/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetLeft2048.bmp");
-                up = initTexture("/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetUp2048.bmp");
-                down = initTexture("/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetDown2048.bmp");
+                front = initTexture(frontImgPath);
+                back = initTexture(backImgPath);
+                right = initTexture(rightImgPath);
+                left = initTexture(leftImgPath);
+                up = initTexture(upImgPath);
+                down = initTexture(downImgPath);
             }
             initialized = true;
 
@@ -128,45 +139,22 @@ class Skybox : public Shape {
 
 
         void drawNormal() {
-            glPushMatrix(); {
-                drawCubeFaceNormal();
-            }
-            glPopMatrix();
-            glPushMatrix(); {
-                glRotatef(90, 0, 1, 0);
-                drawCubeFaceNormal();
-            }
-            glPopMatrix();
-            glPushMatrix(); {
-                glRotatef(180, 0, 1, 0);
-                drawCubeFaceNormal();
-            }
-            glPopMatrix();
-            glPushMatrix(); {
-                glRotatef(270, 0, 1, 0);
-                drawCubeFaceNormal();
-            }
-            glPopMatrix();
-            glPushMatrix(); {
-                glRotatef(270, 1, 0, 0);
-                drawCubeFaceNormal();
-            }
-            glPopMatrix();
-            glPushMatrix(); {
-                glRotatef(90, 1, 0, 0);
-                drawCubeFaceNormal();
-            }
-            glPopMatrix();
         };
 
     private:
 
         GLuint texture;
+        char const * frontImgPath;
+        char const * backImgPath;
+        char const * rightImgPath;
+        char const * leftImgPath;
+        char const * upImgPath;
+        char const * downImgPath;
 
         void drawCubeFace(GLuint texture) {
             float width = 1.0f / (float)m_segmentsX;
             float height = 1.0f / (float)m_segmentsY;
-            float size = 20.0f;
+            float size = 2.0f;
 
             glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -179,28 +167,6 @@ class Skybox : public Shape {
             glEnd();
         }
 
-        void drawCubeFaceNormal() {
-            float width = 1.0f / (float)m_segmentsX;
-            float height = 1.0f / (float)m_segmentsY;
-            float startX = -0.5f;
-            float startY = -0.5f;
-
-            glBegin(GL_LINES);
-            for (int i = 0; i < m_segmentsX; i++) {
-                float xcoord = startX + (i*width);
-                for (int j = 0; j < m_segmentsY; j++) {
-                    float ycoord = startY + (j*height);
-                    glVertex3d(xcoord, ycoord, 0); glVertex3d(xcoord, ycoord, 0.1); 
-                    glVertex3d(xcoord + width, ycoord, 0); glVertex3d(xcoord + width, ycoord, 0.1);
-                    glVertex3d(xcoord + width, ycoord + height, 0); glVertex3d(xcoord + width, ycoord + height, 0.1);
-
-                    glVertex3d(xcoord + width, ycoord + height, 0); glVertex3d(xcoord + width, ycoord + height, 0.1);
-                    glVertex3d(xcoord, ycoord + height, 0); glVertex3d(xcoord, ycoord + height, 0.1); 
-                    glVertex3d(xcoord, ycoord, 0); glVertex3d(xcoord, ycoord, 0.1);
-                }
-            }
-            glEnd();
-        }
 };
 
 #endif
