@@ -8,14 +8,8 @@
 #include "shapes/Cylinder.h"
 #include "shapes/Cone.h"
 #include "shapes/Sphere.h"
+#include "shapes/Skybox.h"
 #include "camera/Camera.h"
-
-GLuint back;
-GLuint front;
-GLuint left;
-GLuint right;
-GLuint up;
-GLuint down;
 
 enum OBJ_TYPE {
 	SHAPE_CUBE = 0,
@@ -45,12 +39,12 @@ int	 camRotU = 0;
 int	 camRotV = 0;
 int	 camRotW = 0;
 int  viewAngle = 45;
-float eyeX = 2;
-float eyeY = 2;
-float eyeZ = 2;
-float lookX = -2;
-float lookY = -2;
-float lookZ = -2;
+float eyeX = 0;
+float eyeY = 0;
+float eyeZ = -3;
+float lookX = 0;
+float lookY = 0;
+float lookZ = 1;
 float clipNear = 0.001;
 float clipFar = 30;
 float upX = 0.0;
@@ -73,7 +67,14 @@ Cube* cube = new Cube();
 Cylinder* cylinder = new Cylinder();
 Cone* cone = new Cone();
 Sphere* sphere = new Sphere();
-Shape* shape = cube;
+Skybox* skybox = new Skybox();
+    /* "/home/kevin/classes/graphics/libby-city/libby-city/src/shapes/SunSetFront2048.bmp", */
+    /* "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetBack2048.bmp", */
+    /* "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetRight2048.bmp", */
+    /* "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetLeft2048.bmp", */
+    /* "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetUp2048.bmp", */
+    /* "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetDown2048.bmp"); */
+Shape* shape = skybox;
 Camera* camera = new Camera();
 
 /***************************************** callback_obj() ***********/
@@ -96,7 +97,8 @@ void callback_obj(int id) {
 		shape = cube;
 		break;
 	default:
-		shape = cube;
+		//shape = skybox;
+		shape = skybox;
 	}
 }
 
@@ -262,7 +264,7 @@ int calcDeltaTime() {
 
 void myGlutDisplay(void)
 {
-	/* glClearColor(.9f, .9f, .9f, 1.0f); */
+	glClearColor(.9f, .9f, .9f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	camera->SetViewAngle(viewAngle);
@@ -319,9 +321,9 @@ void myGlutDisplay(void)
 
     glEnable(GL_LIGHTING);
 	if (fill) {
-		/* glEnable(GL_POLYGON_OFFSET_FILL); */
-		/* glColor3f(0.5, 0.5, 0.5); */
-		/* glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); */
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glColor3f(1, 1, 1);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		shape->draw();
 	}
 	
@@ -347,27 +349,12 @@ void onExit()
 	delete sphere;
 }
 
-GLuint loadBMP(const char * imagepath);
 
 /**************************************** main() ********************/
 
 int main(int argc, char* argv[])
 {
 	atexit(onExit);
-
-	/****************************************/
-	/*         Load Skybox Textures         */
-	/****************************************/
-    back = loadBMP("../img/SkyboxSet1/SunSet/SunSetBack2048.bmp"); 
-    front = loadBMP("../img/SkyboxSet1/SunSet/SunSetFront2048.bmp"); 
-
-    left = loadBMP("../img/SkyboxSet1/SunSet/SunSetLeft2048.bmp"); 
-    right = loadBMP("../img/SkyboxSet1/SunSet/SunSetRight2048.bmp"); 
-
-    up = loadBMP("../img/SkyboxSet1/SunSet/SunSetUp2048.bmp"); 
-    down = loadBMP("../img/SkyboxSet1/SunSet/SunSetDown2048.bmp"); 
-
-    cube->setTexture(front);
 
 	/****************************************/
 	/*   Initialize GLUT and create window  */
@@ -396,17 +383,23 @@ int main(int argc, char* argv[])
 
 	    glClearColor (0.38, 0.38, 0.38, 0.0);
         glShadeModel (GL_SMOOTH);
+    GLfloat light_ambient     [] = { 0.0f, 0.0f, 0.0f, 1.0f };  /* default value */
+    GLfloat light_diffuse     [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
+    GLfloat light_specular    [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
+    GLfloat light_position    [] = { 1.0f, 1.0f, 1.0f, 0.0f };  /* NOT default value */
+    GLfloat lightModel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };  /* default value */
+    GLfloat material_specular [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* NOT default value */
+    GLfloat material_emission [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
 
-        GLfloat light_pos0[] = {0.0f, 0.0f, 1.0f, 0.0f};
-        GLfloat diffuse[] = {0.5f, 0.5f, 0.5f, 0.0f};
-        GLfloat ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-
-        glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-        glLightfv(GL_LIGHT0, GL_POSITION, light_pos0);
-
-        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-        glEnable(GL_COLOR_MATERIAL);
+    glLightfv (GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv (GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv (GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv (GL_LIGHT0, GL_POSITION, light_position);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lightModel_ambient);
+    glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
+    glMaterialfv(GL_FRONT, GL_EMISSION, material_emission);
+    glMaterialf(GL_FRONT, GL_SHININESS, 10.0);               /* NOT default value	*/
 
         glEnable(GL_LIGHTING);
         glEnable(GL_LIGHT0);
@@ -496,54 +489,4 @@ int main(int argc, char* argv[])
 
 	return EXIT_SUCCESS;
 }
-
-GLuint loadBMP(const char * imagepath) {
-
-	GLuint texture;
-	int width = 2048, height = 2048;
-	unsigned char * data;
-
-	FILE * file;
-	file = fopen(imagepath, "rb");
-
-	if (file == NULL) {
-        return 0;
-	}
-
-	data = (unsigned char *)malloc( width * height * 3);
-	//int size = fseek(file,);
-	fread(data, width * height * 3, 1, file);
-	fclose(file);
-
-	for (int i = 0; i < width * height ; ++i) {
-		int index = i*3;
-		unsigned char B,R;
-		B = data[index];
-		R = data[index + 2];
-
-		data[index] = R;
-		data[index + 2] = B;
-	}
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	/* glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE); */
-	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST); */
-
-
-	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR); */
-	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT); */
-	/* glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT); */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data);
-	free(data);
-
-	return texture;
-}
-
 
