@@ -41,7 +41,7 @@ int	 camRotW = 0;
 int  viewAngle = 45;
 float eyeX = 0;
 float eyeY = 0;
-float eyeZ = 0;
+float eyeZ = -4;
 float lookX = 0;
 float lookY = 0;
 float lookZ = 1;
@@ -68,7 +68,8 @@ Cylinder* cylinder = new Cylinder();
 Cone* cone = new Cone();
 Sphere* sphere = new Sphere();
 Skybox* skybox = new Skybox(
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/shapes/SunSetFront2048.bmp",
+    //"/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetFront2048.bmp",
+    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/small-pattern.bmp",
     "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetBack2048.bmp",
     "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetRight2048.bmp",
     "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetLeft2048.bmp",

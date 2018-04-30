@@ -27,8 +27,8 @@ class Skybox : public Shape {
 
         void draw() {
             glEnable(GL_TEXTURE_2D);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            /* glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); */
+            /* glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); */
             if (!initialized) {
                 front = initTexture(frontImgPath);
                 back = initTexture(backImgPath);
@@ -45,31 +45,31 @@ class Skybox : public Shape {
                     drawCubeFace(front);
                 }
                 glPopMatrix();
-                glPushMatrix(); { // +X
-                    glRotatef(90, 0, 1, 0);
-                    drawCubeFace(left);
-                }
-                glPopMatrix();
-                glPushMatrix(); { // -Z
-                    glRotatef(180, 0, 1, 0);
-                    drawCubeFace(back);
-                }
-                glPopMatrix();
-                glPushMatrix(); { // -X
-                    glRotatef(270, 0, 1, 0);
-                    drawCubeFace(right);
-                }
-                glPopMatrix();
-                glPushMatrix(); { // -Y
-                    glRotatef(270, 1, 0, 0);
-                    drawCubeFace(down);
-                }
-                glPopMatrix();
-                glPushMatrix(); { // +Y
-                    glRotatef(90, 1, 0, 0);
-                    drawCubeFace(up);
-                }
-                glPopMatrix();
+                /* glPushMatrix(); { // +X */
+                /*     glRotatef(90, 0, 1, 0); */
+                /*     drawCubeFace(left); */
+                /* } */
+                /* glPopMatrix(); */
+                /* glPushMatrix(); { // -Z */
+                /*     glRotatef(180, 0, 1, 0); */
+                /*     drawCubeFace(back); */
+                /* } */
+                /* glPopMatrix(); */
+                /* glPushMatrix(); { // -X */
+                /*     glRotatef(270, 0, 1, 0); */
+                /*     drawCubeFace(right); */
+                /* } */
+                /* glPopMatrix(); */
+                /* glPushMatrix(); { // -Y */
+                /*     glRotatef(270, 1, 0, 0); */
+                /*     drawCubeFace(down); */
+                /* } */
+                /* glPopMatrix(); */
+                /* glPushMatrix(); { // +Y */
+                /*     glRotatef(90, 1, 0, 0); */
+                /*     drawCubeFace(up); */
+                /* } */
+                /* glPopMatrix(); */
             glPopMatrix();
         };
 
@@ -89,12 +89,8 @@ class Skybox : public Shape {
         bool initialized = false;
 
         void drawCubeFace(GLuint texture) {
-            float width = 1.0f / (float)m_segmentsX;
-            float height = 1.0f / (float)m_segmentsY;
             float size = 2.0f;
-
             glBindTexture(GL_TEXTURE_2D, texture);
-
             glBegin(GL_QUADS);
                 glNormal3f(0.0, 0.0, 1.0);
                 glTexCoord2f(0.0, 0.0); glVertex3f(-size,  size,  size);
@@ -105,7 +101,8 @@ class Skybox : public Shape {
         }
 
         GLuint initTexture(const char * imagepath) {
-            int width = 2048, height = 2048;
+            int imgSize = 32;
+            int width = imgSize, height = imgSize;
             unsigned char * data;
 
             FILE * file;
@@ -143,9 +140,9 @@ class Skybox : public Shape {
             glGenTextures  (1, &texture);
             glBindTexture  (GL_TEXTURE_2D, texture);
             glPixelStorei  (GL_UNPACK_ALIGNMENT, 1);
-            glTexImage2D   (GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexImage2D   (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexEnvf      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
