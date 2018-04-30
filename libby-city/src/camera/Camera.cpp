@@ -23,7 +23,6 @@ void Camera::Orient(Point& eye, Point& focus, Vector& up) {
 	Orient(eye, lookVector, up);
 }
 
-
 void Camera::Orient(Point& eye, Vector& look, Vector& up) {
 	Matrix orient;
 

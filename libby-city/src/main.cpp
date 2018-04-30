@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cstdlib>
 #include <cmath>
+#include <string>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/glui.h>
@@ -8,6 +10,7 @@
 #include "shapes/Cylinder.h"
 #include "shapes/Cone.h"
 #include "shapes/Sphere.h"
+#include "shapes/Skybox.h"
 #include "camera/Camera.h"
 
 enum OBJ_TYPE {
@@ -38,12 +41,12 @@ int	 camRotU = 0;
 int	 camRotV = 0;
 int	 camRotW = 0;
 int  viewAngle = 45;
-float eyeX = 2;
-float eyeY = 2;
-float eyeZ = 2;
-float lookX = -2;
-float lookY = -2;
-float lookZ = -2;
+float eyeX = 0;
+float eyeY = 0;
+float eyeZ = -4;
+float lookX = 0;
+float lookY = 0;
+float lookZ = 1;
 float clipNear = 0.001;
 float clipFar = 30;
 float upX = 0.0;
@@ -66,8 +69,11 @@ Cube* cube = new Cube();
 Cylinder* cylinder = new Cylinder();
 Cone* cone = new Cone();
 Sphere* sphere = new Sphere();
-Shape* shape = cube;
+Skybox* skybox;
+Shape* shape;
 Camera* camera = new Camera();
+
+std::string project_dir = std::string(std::getenv("LIBBY_CITY_PROJECT_DIR"));
 
 /***************************************** callback_obj() ***********/
 
@@ -89,7 +95,8 @@ void callback_obj(int id) {
 		shape = cube;
 		break;
 	default:
-		shape = cube;
+		//shape = skybox;
+		shape = skybox;
 	}
 }
 
@@ -121,24 +128,21 @@ void myGlutReshape(int x, int y)
 }
 
 void mouseMoveHandler(int x, int y) {
-    if ((screenWidth - x) > (0.9 * screenWidth)) {        // rotate left
-        rotationDirection[0] = -1;
-        std::cout << "rotate left" << std::endl;
-    } else if ((screenWidth - x) < (0.1 * screenWidth)) { // rotate right
+    if ((screenWidth - x) > (0.75 * screenWidth)) {        // rotate left
         rotationDirection[0] = 1;
-        std::cout << "rotate right" << std::endl;
+    } else if ((screenWidth - x) < (0.25 * screenWidth)) { // rotate right
+        rotationDirection[0] = -1;
     } else {                                              // dont rotate left or right
         rotationDirection[0] = 0;
     }
 
-    if ((screenHeight - y) > (0.9 * screenHeight)) {        // rotate up
+    if ((screenHeight - y) > (0.75 * screenHeight)) {        // rotate up
         rotationDirection[1] = -1;
-    } else if ((screenHeight - y) < (0.1 * screenHeight)) { // rotate down
+    } else if ((screenHeight - y) < (0.25 * screenHeight)) { // rotate down
         rotationDirection[1] = 1;
     } else {                                              // dont rotate up or down
         rotationDirection[1] = 0;
     }
-
 }
 
 void keyPressHandler(unsigned char key, int x, int y) {
@@ -199,6 +203,19 @@ void updateCameraPos(int deltaTime) {
     eyeY = eyeP[1];
     eyeZ = eyeP[2];
 
+    if (rotationDirection[0] != 0) {
+        Matrix rotMat = rotY_mat(3.142 /180 * rotationDirection[0]);
+        Matrix cam2World = camera->getCamera2WorldMatrix();
+
+        Vector look(0.0, 0.0, -1.0);
+        look = rotMat * look;
+        look = cam2World * look;
+
+        lookX = look[0];
+        lookY = look[1];
+        lookZ = look[2];
+    }
+
     if (rotationDirection[1] != 0) {
 
         float cs = cos(3.142 /180 * rotationDirection[1]);
@@ -256,7 +273,6 @@ void myGlutDisplay(void)
 	Matrix projection = camera->GetProjectionMatrix();
 	glMultMatrixd(projection.unpack());
 
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -304,7 +320,7 @@ void myGlutDisplay(void)
     glEnable(GL_LIGHTING);
 	if (fill) {
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glColor3f(0.5, 0.5, 0.5);
+		glColor3f(1, 1, 1);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		shape->draw();
 	}
@@ -331,11 +347,24 @@ void onExit()
 	delete sphere;
 }
 
+
 /**************************************** main() ********************/
 
 int main(int argc, char* argv[])
 {
 	atexit(onExit);
+
+    // init skybox
+    skybox = new Skybox(
+        project_dir + "libby-city/src/img/SunSetFront2048.bmp",
+        project_dir + "libby-city/src/img/SunSetBack2048.bmp",
+        project_dir + "libby-city/src/img/SunSetRight2048.bmp",
+        project_dir + "libby-city/src/img/SunSetLeft2048.bmp",
+        project_dir + "libby-city/src/img/SunSetUp2048.bmp",
+        project_dir + "libby-city/src/img/SunSetDown2048.bmp"
+    );
+
+    shape = skybox;
 
 	/****************************************/
 	/*   Initialize GLUT and create window  */
@@ -361,24 +390,29 @@ int main(int argc, char* argv[])
 	/*       Set up OpenGL lighting         */
 	/****************************************/
 
+    glClearColor (0.38, 0.38, 0.38, 0.0);
+    glShadeModel (GL_SMOOTH);
+    GLfloat light_ambient     [] = { 0.0f, 0.0f, 0.0f, 1.0f };  /* default value */
+    GLfloat light_diffuse     [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
+    GLfloat light_specular    [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
+    GLfloat light_position    [] = { 1.0f, 1.0f, 1.0f, 0.0f };  /* NOT default value */
+    GLfloat lightModel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };  /* default value */
+    GLfloat material_specular [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* NOT default value */
+    GLfloat material_emission [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
 
-	    glClearColor (0.38, 0.38, 0.38, 0.0);
-        glShadeModel (GL_SMOOTH);
+    glLightfv (GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv (GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv (GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv (GL_LIGHT0, GL_POSITION, light_position);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lightModel_ambient);
+    glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, material_specular);
+    glMaterialfv(GL_FRONT, GL_EMISSION, material_emission);
+    glMaterialf(GL_FRONT, GL_SHININESS, 10.0);               /* NOT default value	*/
 
-        GLfloat light_pos0[] = {0.0f, 0.0f, 1.0f, 0.0f};
-        GLfloat diffuse[] = {0.5f, 0.5f, 0.5f, 0.0f};
-        GLfloat ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
-
-        glLightfv (GL_LIGHT0, GL_AMBIENT, ambient);
-        glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse);
-        glLightfv (GL_LIGHT0, GL_POSITION, light_pos0);
-
-        glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-        glEnable (GL_COLOR_MATERIAL);
-
-        glEnable(GL_LIGHTING);
-        glEnable (GL_LIGHT0);
-        glEnable (GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
 
 	///****************************************/
 	///*          Enable z-buferring          */
@@ -463,6 +497,4 @@ int main(int argc, char* argv[])
 
 	return EXIT_SUCCESS;
 }
-
-
 
