@@ -2,19 +2,20 @@
 #define SKYBOX_H
 
 #include <iostream>
+#include <string>
 #include <cerrno>
+#include "../util/bmpread.h"
 #include "Shape.h"
-
 
 class Skybox : public Shape {
     public:
         Skybox(
-            char const * frontImgPath,
-            char const * backImgPath,
-            char const * rightImgPath,
-            char const * leftImgPath,
-            char const * upImgPath,
-            char const * downImgPath
+            std::string frontImgPath,
+            std::string backImgPath,
+            std::string rightImgPath,
+            std::string leftImgPath,
+            std::string upImgPath,
+            std::string downImgPath
         ) {
             this->frontImgPath = frontImgPath;
             this->backImgPath = backImgPath;
@@ -45,31 +46,31 @@ class Skybox : public Shape {
                     drawCubeFace(front);
                 }
                 glPopMatrix();
-                /* glPushMatrix(); { // +X */
-                /*     glRotatef(90, 0, 1, 0); */
-                /*     drawCubeFace(left); */
-                /* } */
-                /* glPopMatrix(); */
-                /* glPushMatrix(); { // -Z */
-                /*     glRotatef(180, 0, 1, 0); */
-                /*     drawCubeFace(back); */
-                /* } */
-                /* glPopMatrix(); */
-                /* glPushMatrix(); { // -X */
-                /*     glRotatef(270, 0, 1, 0); */
-                /*     drawCubeFace(right); */
-                /* } */
-                /* glPopMatrix(); */
-                /* glPushMatrix(); { // -Y */
-                /*     glRotatef(270, 1, 0, 0); */
-                /*     drawCubeFace(down); */
-                /* } */
-                /* glPopMatrix(); */
-                /* glPushMatrix(); { // +Y */
-                /*     glRotatef(90, 1, 0, 0); */
-                /*     drawCubeFace(up); */
-                /* } */
-                /* glPopMatrix(); */
+                glPushMatrix(); { // +X
+                    glRotatef(90, 0, 1, 0);
+                    drawCubeFace(left);
+                }
+                glPopMatrix();
+                glPushMatrix(); { // -Z
+                    glRotatef(180, 0, 1, 0);
+                    drawCubeFace(back);
+                }
+                glPopMatrix();
+                glPushMatrix(); { // -X
+                    glRotatef(270, 0, 1, 0);
+                    drawCubeFace(right);
+                }
+                glPopMatrix();
+                glPushMatrix(); { // -Y
+                    glRotatef(270, 1, 0, 0);
+                    drawCubeFace(down);
+                }
+                glPopMatrix();
+                glPushMatrix(); { // +Y
+                    glRotatef(90, 1, 0, 0);
+                    drawCubeFace(up);
+                }
+                glPopMatrix();
             glPopMatrix();
         };
 
@@ -80,12 +81,12 @@ class Skybox : public Shape {
     private:
 
         GLuint back, front, left, right, up, down;
-        char const * frontImgPath;
-        char const * backImgPath;
-        char const * rightImgPath;
-        char const * leftImgPath;
-        char const * upImgPath;
-        char const * downImgPath;
+        std::string frontImgPath;
+        std::string backImgPath;
+        std::string rightImgPath;
+        std::string leftImgPath;
+        std::string upImgPath;
+        std::string downImgPath;
         bool initialized = false;
 
         void drawCubeFace(GLuint texture) {
@@ -100,53 +101,35 @@ class Skybox : public Shape {
             glEnd();
         }
 
-        GLuint initTexture(const char * imagepath) {
-            int imgSize = 32;
-            int width = imgSize, height = imgSize;
-            unsigned char * data;
-
-            FILE * file;
-            file = fopen(imagepath, "rb");
-
-            if (file == NULL) {
-                std::cout << "fopen failed: " << std::strerror(errno) << std::endl;
-                return 0;
-            }
-
-            data = (unsigned char *)malloc( width * height * 3);
-            fread(data, width * height * 3, 1, file);
-            fclose(file);
-
-            GLubyte* floorTexture = new GLubyte[width * height * 3];//[width][height][3];
-            GLubyte *loc;
-            int s, t;
-
-            /* Setup RGB image for the texture. */
-            loc = (GLubyte*) floorTexture;
-            for (t = 0; t < height; t++) {
-                for (s = 0; s < width; s++) {
-                    int index = ((t * height) + s) * 3;
-                    loc[0] = data[index + 2]; // R
-                    loc[1] = data[index + 1]; // G
-                    loc[2] = data[index];     // B
-                    loc += 3;
-                }
-            }
-
-            free(data);
-
+        GLuint initTexture(const std::string imagePath) {
             GLuint texture;
+            bmpread_t bitmap;
+
+            if (!bmpread(imagePath.c_str(), 0, &bitmap)) {
+                std::cout << "BMPRead failed, unable to load bitmap" << std::endl; 
+            }
 
             glGenTextures  (1, &texture);
             glBindTexture  (GL_TEXTURE_2D, texture);
             glPixelStorei  (GL_UNPACK_ALIGNMENT, 1);
-            glTexImage2D   (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, floorTexture);
+            glTexImage2D   (
+                GL_TEXTURE_2D,
+                0,
+                GL_RGB,
+                bitmap.width,
+                bitmap.height,
+                0,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                bitmap.data
+            );
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexEnvf      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-            free(floorTexture);
+
+            bmpread_free(&bitmap);
 
             return texture;
         }

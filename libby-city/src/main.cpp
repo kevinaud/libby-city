@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cstdlib>
 #include <cmath>
+#include <string>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/glui.h>
@@ -67,16 +69,11 @@ Cube* cube = new Cube();
 Cylinder* cylinder = new Cylinder();
 Cone* cone = new Cone();
 Sphere* sphere = new Sphere();
-Skybox* skybox = new Skybox(
-    //"/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetFront2048.bmp",
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/small-pattern.bmp",
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetBack2048.bmp",
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetRight2048.bmp",
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetLeft2048.bmp",
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetUp2048.bmp",
-    "/home/kevin/classes/graphics/libby-city/libby-city/src/img/SunSetDown2048.bmp");
-Shape* shape = skybox;
+Skybox* skybox;
+Shape* shape;
 Camera* camera = new Camera();
+
+std::string project_dir = std::string(std::getenv("LIBBY_CITY_PROJECT_DIR"));
 
 /***************************************** callback_obj() ***********/
 
@@ -357,6 +354,18 @@ int main(int argc, char* argv[])
 {
 	atexit(onExit);
 
+    // init skybox
+    skybox = new Skybox(
+        project_dir + "libby-city/src/img/SunSetFront2048.bmp",
+        project_dir + "libby-city/src/img/SunSetBack2048.bmp",
+        project_dir + "libby-city/src/img/SunSetRight2048.bmp",
+        project_dir + "libby-city/src/img/SunSetLeft2048.bmp",
+        project_dir + "libby-city/src/img/SunSetUp2048.bmp",
+        project_dir + "libby-city/src/img/SunSetDown2048.bmp"
+    );
+
+    shape = skybox;
+
 	/****************************************/
 	/*   Initialize GLUT and create window  */
 	/****************************************/
@@ -381,9 +390,8 @@ int main(int argc, char* argv[])
 	/*       Set up OpenGL lighting         */
 	/****************************************/
 
-
-	    glClearColor (0.38, 0.38, 0.38, 0.0);
-        glShadeModel (GL_SMOOTH);
+    glClearColor (0.38, 0.38, 0.38, 0.0);
+    glShadeModel (GL_SMOOTH);
     GLfloat light_ambient     [] = { 0.0f, 0.0f, 0.0f, 1.0f };  /* default value */
     GLfloat light_diffuse     [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
     GLfloat light_specular    [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
@@ -402,10 +410,9 @@ int main(int argc, char* argv[])
     glMaterialfv(GL_FRONT, GL_EMISSION, material_emission);
     glMaterialf(GL_FRONT, GL_SHININESS, 10.0);               /* NOT default value	*/
 
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
 
 	///****************************************/
 	///*          Enable z-buferring          */
