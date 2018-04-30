@@ -7,6 +7,7 @@
 #include <GL/glui.h>
 #include "shapes/Shape.h"
 #include "shapes/Cube.h"
+#include "shapes/TexturedCube.h"
 #include "shapes/Cylinder.h"
 #include "shapes/Cone.h"
 #include "shapes/Sphere.h"
@@ -23,8 +24,8 @@ enum OBJ_TYPE {
 	SHAPE_SPECIAL3 = 6
 };
 
-int screenWidth = 500;
-int screenHeight = 500;
+int screenWidth = 1000;
+int screenHeight = 1000;
 
 /** These are the live variables passed into GLUI ***/
 int  wireframe = 1;
@@ -43,7 +44,7 @@ int	 camRotW = 0;
 int  viewAngle = 45;
 float eyeX = 0;
 float eyeY = 0;
-float eyeZ = -4;
+float eyeZ = -0.3;
 float lookX = 0;
 float lookY = 0;
 float lookZ = 1;
@@ -66,6 +67,7 @@ int  main_window;
 /** these are the global variables used for rendering **/
 OBJ_TYPE objType = SHAPE_CUBE;
 Cube* cube = new Cube();
+TexturedCube* texturedCube = new TexturedCube();
 Cylinder* cylinder = new Cylinder();
 Cone* cone = new Cone();
 Sphere* sphere = new Sphere();
@@ -80,7 +82,7 @@ std::string project_dir = std::string(std::getenv("LIBBY_CITY_PROJECT_DIR"));
 void callback_obj(int id) {
 	switch (objType) {
 	case SHAPE_CUBE:
-		shape = cube;
+		shape = texturedCube;
 		break;
 	case SHAPE_CYLINDER:
 		shape = cylinder;
@@ -92,11 +94,11 @@ void callback_obj(int id) {
 		shape = sphere;
 		break;
 	case SHAPE_SPECIAL1:
-		shape = cube;
+		shape = texturedCube;
 		break;
 	default:
 		//shape = skybox;
-		shape = skybox;
+		shape = texturedCube;
 	}
 }
 
@@ -258,8 +260,20 @@ int calcDeltaTime() {
     return deltaTime;
 }
 
-/***************************************** myGlutDisplay() *****************/
+void drawAxes() {
+	//drawing the axes
+    glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(0, 0, 0); glVertex3f(1.0, 0, 0);
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3f(0, 0, 0); glVertex3f(0.0, 1.0, 0);
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3f(0, 0, 0); glVertex3f(0, 0, 1.0);
+	glEnd();
+}
 
+/***************************************** myGlutDisplay() *****************/
 void myGlutDisplay(void)
 {
 	glClearColor(.9f, .9f, .9f, 1.0f);
@@ -288,27 +302,9 @@ void myGlutDisplay(void)
 	camera->RotateV(camRotV);
 	camera->RotateU(camRotU);
 	camera->RotateW(camRotW);
+
 	Matrix modelView = camera->GetModelViewMatrix();
 	glMultMatrixd(modelView.unpack());
-
-	//rotate object
-	glRotatef(rotX, 1.0, 0.0, 0.0);
-	glRotatef(rotY, 0.0, 1.0, 0.0);
-	glRotatef(rotZ, 0.0, 0.0, 1.0);
-
-	//drawing the axes
-    glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(0, 0, 0); glVertex3f(1.0, 0, 0);
-	glColor3f(0.0, 1.0, 0.0);
-	glVertex3f(0, 0, 0); glVertex3f(0.0, 1.0, 0);
-	glColor3f(0.0, 0.0, 1.0);
-	glVertex3f(0, 0, 0); glVertex3f(0, 0, 1.0);
-	glEnd();
-
-	//scale object
-	glScalef(scale / 50.0, scale / 50.0, scale / 50.0);
 
 	shape->setSegments(segmentsX, segmentsY);
 	
@@ -341,6 +337,7 @@ void myGlutDisplay(void)
 
 void onExit()
 {
+	delete texturedCube;
 	delete cube;
 	delete cylinder;
 	delete cone;
@@ -364,7 +361,7 @@ int main(int argc, char* argv[])
         project_dir + "libby-city/src/img/SunSetDown2048.bmp"
     );
 
-    shape = skybox;
+    shape = texturedCube;
 
 	/****************************************/
 	/*   Initialize GLUT and create window  */
@@ -465,15 +462,6 @@ int main(int argc, char* argv[])
 	clipF_widget->set_float_limits(0, 100);
 
 	glui->add_column(true);
-
-	GLUI_Panel *obj_panel = glui->add_panel("Object Type");
-	GLUI_RadioGroup *group1 =
-		glui->add_radiogroup_to_panel(obj_panel, (int*)(&objType), 3, callback_obj);
-	glui->add_radiobutton_to_group(group1, "Cube");
-	glui->add_radiobutton_to_group(group1, "Cylinder");
-	glui->add_radiobutton_to_group(group1, "Cone");
-	glui->add_radiobutton_to_group(group1, "Sphere");
-	glui->add_radiobutton_to_group(group1, "Special1");
 
 
 	GLUI_Panel *object_panel = glui->add_panel("Object");

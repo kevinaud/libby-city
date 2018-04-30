@@ -112,25 +112,16 @@ private:
 	}
 
 	void drawCubeFaceNormal() {
-		float width = 1.0f / (float)m_segmentsX;
-		float height = 1.0f / (float)m_segmentsY;
-		float startX = -0.5f;
-		float startY = -0.5f;
+        float size = 0.5;
 
 		glBegin(GL_LINES);
-		for (int i = 0; i < m_segmentsX; i++) {
-			float xcoord = startX + (i*width);
-			for (int j = 0; j < m_segmentsY; j++) {
-				float ycoord = startY + (j*height);
-				glVertex3d(xcoord, ycoord, 0); glVertex3d(xcoord, ycoord, 0.1); 
-				glVertex3d(xcoord + width, ycoord, 0); glVertex3d(xcoord + width, ycoord, 0.1);
-				glVertex3d(xcoord + width, ycoord + height, 0); glVertex3d(xcoord + width, ycoord + height, 0.1);
-
-				glVertex3d(xcoord + width, ycoord + height, 0); glVertex3d(xcoord + width, ycoord + height, 0.1);
-				glVertex3d(xcoord, ycoord + height, 0); glVertex3d(xcoord, ycoord + height, 0.1); 
-				glVertex3d(xcoord, ycoord, 0); glVertex3d(xcoord, ycoord, 0.1);
-			}
-		}
+            glBegin(GL_QUADS);
+                glNormal3f(0.0, 0.0, 1.0);
+                /*glTexCoord2f(0.0, 0.0); */glVertex3f(-size,  size,  size);
+                /*glTexCoord2f(1.0, 0.0); */glVertex3f( size,  size,  size);
+                /*glTexCoord2f(1.0, 1.0); */glVertex3f( size, -size,  size);
+                /*glTexCoord2f(0.0, 1.0); */glVertex3f(-size, -size,  size);
+            glEnd();
 		glEnd();
 	}
 };
