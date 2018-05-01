@@ -7,27 +7,14 @@
 #include <GL/freeglut.h>
 #include <GL/glui.h>
 
-// SHAPES
-#include "shapes/Shape.h"
-#include "shapes/Cube.h"
-#include "shapes/Cylinder.h"
-#include "shapes/Cone.h"
-#include "shapes/Sphere.h"
-#include "shapes/Skybox.h"
-#include "shapes/BuildingPiece.h"
-#include "shapes/CommonBuilding.h"
+// CITY
+#include "city/City.h"
 
 // CAMERA
 #include "camera/Camera.h"
 
-// TEXTURES
-#include "textures/textures.h"
-
 // CONFIG
 #include "config/config.h"
-#include "city/City.h"
-
-using namespace std;
 
 using namespace std;
 
@@ -61,15 +48,98 @@ int rotationDirection[2] = { 0, 0 };
 int  main_window;
 
 /** these are the global variables used for rendering **/
-Cube* cube = new Cube();
-Cylinder* cylinder = new Cylinder();
-Cone* cone = new Cone();
-Sphere* sphere = new Sphere();
-Skybox* skybox;
-Shape* shape;
+City* city;
 Camera* camera = new Camera();
 
-/***************************************** myGlutIdle() ***********/
+int previousTime = 0;
+
+/********************************************************
+ * Function Definitions
+ *******************************************************/
+
+// Camera movement functions
+void mouseMoveHandler(int x, int y);
+void keyPressHandler(unsigned char key, int x, int y);
+void keyReleaseHandler(unsigned char key, int x, int y);
+void updateCameraPos(int deltaTime);
+int calcDeltaTime();
+
+void drawAxes();
+
+// Glut callbacks
+void myGlutDisplay(void);
+void myGlutIdle(void);
+void myGlutReshape(int x, int y);
+
+// city initialization
+void initCity();
+
+// opengl initialization
+void initGLUT(int argc, char* argv[]);
+void initLighting();
+void initGLUI();
+
+// teardown
+void onExit();
+
+/**
+ * MAIN
+ */
+int main(int argc, char* argv[]) {
+	atexit(onExit);
+
+    // set up all the glut / opengl / glui stuff
+    initGLUT(argc, argv);
+
+    // set up city
+    initCity();
+
+	glutMainLoop();
+
+	return EXIT_SUCCESS;
+}
+
+void initCity() {
+    city = new City(1024, 1024);
+    city->setSkybox(new Skybox(
+        project_dir + "libby-city/src/img/SunSetFront2048.bmp",
+        project_dir + "libby-city/src/img/SunSetBack2048.bmp",
+        project_dir + "libby-city/src/img/SunSetRight2048.bmp",
+        project_dir + "libby-city/src/img/SunSetLeft2048.bmp",
+        project_dir + "libby-city/src/img/SunSetUp2048.bmp",
+        project_dir + "libby-city/src/img/SunSetDown2048.bmp"
+    ));
+}
+
+void myGlutDisplay(void)
+{
+	glClearColor(.9f, .9f, .9f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    int deltaTime = calcDeltaTime();
+    updateCameraPos(deltaTime);
+
+    glEnable(GL_LIGHTING);
+	if (filled) {
+		glEnable(GL_POLYGON_OFFSET_FILL);
+		glColor3f(1, 1, 1);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		city->draw();
+	}
+	
+	if (wireframe) {
+		glDisable(GL_POLYGON_OFFSET_FILL);
+		glColor3f(0.0, 0.0, 0.0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        city->draw();
+	}
+
+	camera->RotateV(-camRotV);
+	camera->RotateU(-camRotU);
+	camera->RotateW(-camRotW);
+
+	glutSwapBuffers();
+}
 
 void myGlutIdle(void)
 {
@@ -81,9 +151,6 @@ void myGlutIdle(void)
 
 	glutPostRedisplay();
 }
-
-
-/**************************************** myGlutReshape() *************/
 
 void myGlutReshape(int x, int y)
 {
@@ -237,8 +304,6 @@ void updateCameraPos(int deltaTime) {
 
 }
 
-int previousTime = 0;
-
 int calcDeltaTime() {
     int current = glutGet(GLUT_ELAPSED_TIME);
     int deltaTime = current - previousTime;
@@ -259,69 +324,11 @@ void drawAxes() {
 	glEnd();
 }
 
-/***************************************** myGlutDisplay() *****************/
-void myGlutDisplay(void)
-{
-	glClearColor(.9f, .9f, .9f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-    int deltaTime = calcDeltaTime();
-    updateCameraPos(deltaTime);
-
-	shape->setSegments(segmentsX, segmentsY);
-
-    glEnable(GL_LIGHTING);
-	if (filled) {
-		glEnable(GL_POLYGON_OFFSET_FILL);
-		glColor3f(1, 1, 1);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		shape->draw();
-	}
-	
-	if (wireframe) {
-		glDisable(GL_POLYGON_OFFSET_FILL);
-		glColor3f(0.0, 0.0, 0.0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		shape->draw();
-	}
-
-	camera->RotateV(-camRotV);
-	camera->RotateU(-camRotU);
-	camera->RotateW(-camRotW);
-
-	glutSwapBuffers();
-}
-
-void onExit()
-{
-	delete cube;
-	delete cylinder;
-	delete cone;
-	delete sphere;
-}
-
-
-/**************************************** main() ********************/
-
-int main(int argc, char* argv[])
-{
-	atexit(onExit);
-
-    // init skybox
-    skybox = new Skybox(
-        project_dir + "libby-city/src/img/SunSetFront2048.bmp",
-        project_dir + "libby-city/src/img/SunSetBack2048.bmp",
-        project_dir + "libby-city/src/img/SunSetRight2048.bmp",
-        project_dir + "libby-city/src/img/SunSetLeft2048.bmp",
-        project_dir + "libby-city/src/img/SunSetUp2048.bmp",
-        project_dir + "libby-city/src/img/SunSetDown2048.bmp"
-    );
-
-	/****************************************/
-	/*   Initialize GLUT and create window  */
-	/****************************************/
-
+/****************************************/
+/*   Initialize GLUT and create window  */
+/****************************************/
+void initGLUT(int argc, char* argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowPosition(50, 50);
@@ -338,10 +345,18 @@ int main(int argc, char* argv[])
     // register mouse handlers
     glutPassiveMotionFunc(mouseMoveHandler);
 
-	/****************************************/
-	/*       Set up OpenGL lighting         */
-	/****************************************/
+    initLighting();
 
+    // enable z-buffering
+	glPolygonOffset(1, 1);
+
+    initGLUI();
+}
+
+/****************************************/
+/*       Set up OpenGL lighting         */
+/****************************************/
+void initLighting() {
     glClearColor (0.38, 0.38, 0.38, 0.0);
     glShadeModel (GL_SMOOTH);
     GLfloat light_ambient     [] = { 0.0f, 0.0f, 0.0f, 1.0f };  /* default value */
@@ -365,17 +380,12 @@ int main(int argc, char* argv[])
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
+}
 
-	///****************************************/
-	///*          Enable z-buferring          */
-	///****************************************/
-
-	glPolygonOffset(1, 1);
-
-	/****************************************/
-	/*         Here's the GLUI code         */
-	/****************************************/
-
+/****************************************/
+/*         Here's the GLUI code         */
+/****************************************/
+void initGLUI() {
 	GLUI *glui = GLUI_Master.create_glui("GLUI");
 
 	GLUI_Panel *render_panel = glui->add_panel("Render");
@@ -433,11 +443,10 @@ int main(int argc, char* argv[])
 
 	/* We register the idle callback with GLUI, *not* with GLUT */
 	GLUI_Master.set_glutIdleFunc(myGlutIdle);
+}
 
-    shape = skybox;
-
-	glutMainLoop();
-
-	return EXIT_SUCCESS;
+void onExit()
+{
+	delete city;
 }
 

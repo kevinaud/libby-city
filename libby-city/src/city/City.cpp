@@ -1,14 +1,23 @@
-#ifndef CITY_H
-#define CITY_H
+#include "City.h"
 
-using namespace std;
+City::City(int sizeX, int sizeY) {
+    this->sizeX = sizeX;
+    this->sizeY = sizeY;
+    this->road = new Road(sizeX, sizeY);
+}
 
-class City {
-    public:
-        City();
-        ~City();
+City::~City() {
 
-    private:
-};
+}
 
-#endif
+void City::setSkybox(Skybox* skybox) {
+    this->skybox = skybox;
+}
+
+void City::draw() {
+    if (!texturesInitialized) {
+        initTextures(); 
+    }
+    skybox->draw();
+    road->draw();
+}
