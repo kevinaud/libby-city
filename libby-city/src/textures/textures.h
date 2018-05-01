@@ -1,8 +1,14 @@
+#ifndef TEXTURE_H
+#define TEXTURE_H
+
 #include <string>
 #include <ctime>
 #include <cstdlib>
 #include <algorithm>
 #include "../util/bmpread.h"
+
+#define NUM_WINDOWS 64
+#define WINDOW_UNIT_SIZE 1.0/64.0
 
 enum BuildingLighting {
    SCATTER,
@@ -146,3 +152,5 @@ GLuint getSideTexture(BuildingLighting lighting) {
 
     return texture;
 }
+
+#endif

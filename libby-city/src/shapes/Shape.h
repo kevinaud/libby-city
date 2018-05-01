@@ -14,7 +14,6 @@ public:
 	}
 
 	virtual void draw() {};
-	virtual void drawNormal() {};
 
 protected:
 	void normalizeNormal (float x, float y, float z) {
