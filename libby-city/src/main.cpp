@@ -13,7 +13,9 @@
 #include "shapes/Sphere.h"
 #include "shapes/Skybox.h"
 #include "shapes/BuildingPiece.h"
+#include "shapes/CommonBuilding.h"
 #include "camera/Camera.h"
+#include "textures/textures.h"
 
 
 enum OBJ_TYPE {
@@ -46,12 +48,12 @@ int	 camRotW = 0;
 int  viewAngle = 45;
 float eyeX = 0;
 float eyeY = 0;
-float eyeZ = -0.3;
+float eyeZ = 0;
 float lookX = 0;
 float lookY = 0;
 float lookZ = 1;
 float clipNear = 0.001;
-float clipFar = 30;
+float clipFar = 10000;
 float upX = 0.0;
 float upY = 1.0;
 float upZ = 0.0;
@@ -101,8 +103,9 @@ void callback_obj(int id) {
 		shape = texturedCube;
 		break;
 	default:
-		//shape = skybox;
-		shape = texturedCube;
+		shape = skybox;
+		//shape = texturedCube;
+		//shape = buildingPiece;
 	}
 }
 
@@ -197,7 +200,7 @@ void updateCameraPos(int deltaTime) {
         fMovement = fMovement + dirY;
 
     fMovement = camera->getCamera2WorldMatrix() * fMovement;
-    GLfloat cMovementSpeed = 0.0005;
+    GLfloat cMovementSpeed = 0.0000005;
 
     // Trick to balance PC speed with movement
     GLfloat velocity = cMovementSpeed * deltaTime;
@@ -311,11 +314,6 @@ void myGlutDisplay(void)
 	glMultMatrixd(modelView.unpack());
 
 	shape->setSegments(segmentsX, segmentsY);
-	
-	if (normal) {
-		glColor3f(1.0, 0.0, 0.0);
-		shape->drawNormal();
-	}
 
     glEnable(GL_LIGHTING);
 	if (fill) {
@@ -376,7 +374,6 @@ int main(int argc, char* argv[])
 		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetDown2048.bmp"
 	);
 
-    shape = texturedCube;
 
 	/****************************************/
 	/*   Initialize GLUT and create window  */
@@ -474,7 +471,7 @@ int main(int argc, char* argv[])
 	GLUI_Spinner* clipN_widget = glui->add_spinner_to_panel(camera_panel, "Near:", GLUI_SPINNER_FLOAT, &clipNear);
 	clipN_widget->set_float_limits(0, 10);
 	GLUI_Spinner* clipF_widget = glui->add_spinner_to_panel(camera_panel, "Far:", GLUI_SPINNER_FLOAT, &clipFar);
-	clipF_widget->set_float_limits(0, 100);
+	clipF_widget->set_float_limits(0, 10000);
 
 	glui->add_column(true);
 
@@ -495,6 +492,11 @@ int main(int argc, char* argv[])
 
 	/* We register the idle callback with GLUI, *not* with GLUT */
 	GLUI_Master.set_glutIdleFunc(myGlutIdle);
+
+	//BuildingPiece* buildingPiece = new BuildingPiece(25, 12, 12, BuildingLighting::STRIPED);
+	//shape = buildingPiece;
+	CommonBuilding* commonBuilding = new CommonBuilding(25, 12, 12, BuildingLighting::STRIPED);
+	shape = commonBuilding;
 
 	glutMainLoop();
 
