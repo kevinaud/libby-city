@@ -1,33 +1,57 @@
 #include "textures.h"
 
-void lightOnColor(GLubyte* windowColor) {
-    int subtract = rand() % 50;
-    windowColor[0] = 0xFF - subtract;
-    windowColor[1] = 0xFF - subtract;
-    windowColor[2] = 0xFF - subtract;
+GlobalTextures textures;
+bool texturesInitialized = false;
+
+void initTextures() {
+    textures.building.scatter = getBuildingTexture(BuildingLighting::SCATTER);
+    textures.building.striped = getBuildingTexture(BuildingLighting::STRIPED);
+    texturesInitialized = true;
 }
 
-void lightOffColor(GLubyte* windowColor) {
-    int add = rand() % 50;
-    windowColor[0] = 0x00 + add;
-    windowColor[1] = 0x00 + add;
-    windowColor[2] = 0x00 + add;
+GLuint getBuildingTexture(BuildingLighting lighting) {
+
+    int imgSize = 512;
+    int width = imgSize, height = imgSize;
+    GLubyte* data = generateBuildingTextureData(lighting);
+    GLuint texture;
+
+    glGenTextures  (1, &texture);
+    glBindTexture  (GL_TEXTURE_2D, texture);
+    glPixelStorei  (GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D   (
+        GL_TEXTURE_2D,
+        0,
+        GL_RGB,
+        width,
+        height,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        data
+    );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexEnvf      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    free(data);
+
+    return texture;
 }
 
-GLubyte* generateBuildingTexture(BuildingLighting lighting) {
+GLubyte* generateBuildingTextureData(BuildingLighting lighting) {
     int imgSize = 512;
     int width = imgSize, height = imgSize;
 
     GLubyte* data = new GLubyte[width * height * 3];
-    GLubyte *loc;
-    int s, t;
 
     int numWindows = 64;
     int windowSize = 8; // pixels
     int textureWidth = 512;
     int colorSize = 3;
 
-    int wndx = 0;
     GLubyte windowColor[3] = { 0x00, 0x00, 0x00 };
 
     bool lightOn;
@@ -105,34 +129,18 @@ GLubyte* generateBuildingTexture(BuildingLighting lighting) {
     return data;
 }
 
-GLuint getSideTexture(BuildingLighting lighting) {
 
-    int imgSize = 512;
-    int width = imgSize, height = imgSize;
-    GLubyte* data = generateBuildingTexture(lighting);
-    GLuint texture;
-
-    glGenTextures  (1, &texture);
-    glBindTexture  (GL_TEXTURE_2D, texture);
-    glPixelStorei  (GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D   (
-        GL_TEXTURE_2D,
-        0,
-        GL_RGB,
-        width,
-        height,
-        0,
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        data
-    );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexEnvf      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    free(data);
-
-    return texture;
+void lightOnColor(GLubyte* windowColor) {
+    int subtract = rand() % 50;
+    windowColor[0] = 0xFF - subtract;
+    windowColor[1] = 0xFF - subtract;
+    windowColor[2] = 0xFF - subtract;
 }
+
+void lightOffColor(GLubyte* windowColor) {
+    int add = rand() % 50;
+    windowColor[0] = 0x00 + add;
+    windowColor[1] = 0x00 + add;
+    windowColor[2] = 0x00 + add;
+}
+

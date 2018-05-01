@@ -14,15 +14,40 @@
 
 using namespace std;
 
+/**
+ * data types
+ */
+struct GlobalTextures {
+    struct BuildingTextures {
+        GLuint scatter;
+        GLuint striped;
+    };
+    
+    BuildingTextures building;
+    bool initialized;
+};
+
 enum BuildingLighting {
    SCATTER,
    STRIPED
 };
 
+/**
+ * global variables
+ */
+extern GlobalTextures textures;
+extern bool texturesInitialized;
+
+/**
+ * function definitions
+ */
+void initTextures();
+
+GLubyte* generateBuildingTextureData(BuildingLighting lighting);
+GLuint getBuildingTexture(BuildingLighting lighting);
+
 void lightOnColor(GLubyte* windowColor);
 void lightOffColor(GLubyte* windowColor);
 
-GLubyte* generateBuildingTexture(BuildingLighting lighting);
-GLuint getSideTexture(BuildingLighting lighting);
 
 #endif

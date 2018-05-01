@@ -7,6 +7,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "../util/bmpread.h"
+#include "../textures/textures.h"
 #include "Shape.h"
 
 using namespace std;
