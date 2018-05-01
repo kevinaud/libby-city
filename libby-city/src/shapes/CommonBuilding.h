@@ -52,7 +52,6 @@ public:
 
 private:
 	void createBuilding() {
-
 		vector<int> possibleRotations = { 0, 90, 180, 270 };
 		
 		int mainLength = rand() % (columns_length_max - (columns_length_max/2)) + (columns_length_max/2);
