@@ -4,8 +4,12 @@
 #include <iostream>
 #include <string>
 #include <cerrno>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 #include "../util/bmpread.h"
 #include "Shape.h"
+
+using namespace std;
 
 class Skybox : public Shape {
     public:
