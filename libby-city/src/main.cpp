@@ -16,7 +16,7 @@
 #include "shapes/CommonBuilding.h"
 #include "camera/Camera.h"
 #include "textures/textures.h"
-
+#include "config/config.h"
 
 enum OBJ_TYPE {
 	SHAPE_CUBE = 0,
@@ -78,10 +78,6 @@ Sphere* sphere = new Sphere();
 Skybox* skybox;
 Shape* shape;
 Camera* camera = new Camera();
-
-// !!
-std::string project_dir = "C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city";
-//std::string project_dir = std::string(std::getenv("LIBBY_CITY_PROJECT_DIR"));
 
 /***************************************** callback_obj() ***********/
 
@@ -354,8 +350,6 @@ int main(int argc, char* argv[])
 	atexit(onExit);
 
     // init skybox
-	// !!
-	/*
     skybox = new Skybox(
         project_dir + "libby-city/src/img/SunSetFront2048.bmp",
         project_dir + "libby-city/src/img/SunSetBack2048.bmp",
@@ -364,16 +358,6 @@ int main(int argc, char* argv[])
         project_dir + "libby-city/src/img/SunSetUp2048.bmp",
         project_dir + "libby-city/src/img/SunSetDown2048.bmp"
     );
-	*/
-	skybox = new Skybox(
-		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetFront2048.bmp",
-		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetBack2048.bmp",
-		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetRight2048.bmp",
-		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetLeft2048.bmp",
-		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetUp2048.bmp",
-		"C:\\Users\\ejsme\\OneDrive\\GRAPHICS\\libby-city\\libby-city\\src\\img\\SunSetDown2048.bmp"
-	);
-
 
 	/****************************************/
 	/*   Initialize GLUT and create window  */
@@ -495,8 +479,9 @@ int main(int argc, char* argv[])
 
 	//BuildingPiece* buildingPiece = new BuildingPiece(25, 12, 12, BuildingLighting::STRIPED);
 	//shape = buildingPiece;
-	CommonBuilding* commonBuilding = new CommonBuilding(25, 12, 12, BuildingLighting::STRIPED);
-	shape = commonBuilding;
+	/* CommonBuilding* commonBuilding = new CommonBuilding(25, 12, 12, BuildingLighting::STRIPED); */
+	/* shape = commonBuilding; */
+    shape = skybox;
 
 	glutMainLoop();
 

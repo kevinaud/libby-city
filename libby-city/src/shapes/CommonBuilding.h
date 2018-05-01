@@ -24,11 +24,11 @@ public:
 
 		createBuilding();
 
-		pieces = new BuildingPiece[4];
-		pieces[0] = BuildingPiece(24, 20, 20, texture);
-		pieces[1] = BuildingPiece(25, 1, 1, texture);
-		pieces[2] = BuildingPiece(10, 10, 7, texture);
-		pieces[3] = BuildingPiece(8, 6, 8, texture);
+		/* pieces = new BuildingPiece[4]; */
+		/* pieces[0] = BuildingPiece(24, 20, 20, texture); */
+		/* pieces[1] = BuildingPiece(25, 1, 1, texture); */
+		/* pieces[2] = BuildingPiece(10, 10, 7, texture); */
+		/* pieces[3] = BuildingPiece(8, 6, 8, texture); */
 	};
 
 	~CommonBuilding() {

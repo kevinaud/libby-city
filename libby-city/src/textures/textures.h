@@ -65,7 +65,6 @@ GLubyte* generateBuildingTexture(BuildingLighting lighting) {
                     stripeLength++;
                 } else {
                     stripeLength = (rand() % 30) - 15;
-                    std::cout << stripeLength << std::endl;
                     lightOn = (stripeLength > 0);
                 }
             }
