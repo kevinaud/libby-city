@@ -25,9 +25,6 @@
 
 // CONFIG
 #include "config/config.h"
-#include "city/City.h"
-
-using namespace std;
 
 using namespace std;
 

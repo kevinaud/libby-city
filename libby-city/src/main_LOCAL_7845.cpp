@@ -1,4 +1,3 @@
-// LIBARIES
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -6,68 +5,108 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <GL/glui.h>
-
-// SHAPES
 #include "shapes/Shape.h"
 #include "shapes/Cube.h"
+#include "shapes/TexturedCube.h"
 #include "shapes/Cylinder.h"
 #include "shapes/Cone.h"
 #include "shapes/Sphere.h"
 #include "shapes/Skybox.h"
 #include "shapes/BuildingPiece.h"
 #include "shapes/CommonBuilding.h"
-
-// CAMERA
 #include "camera/Camera.h"
-
-// TEXTURES
 #include "textures/textures.h"
-
-// CONFIG
 #include "config/config.h"
 #include "city/City.h"
 
 using namespace std;
 
-using namespace std;
+enum OBJ_TYPE {
+	SHAPE_CUBE = 0,
+	SHAPE_CYLINDER = 1,
+	SHAPE_CONE = 2,
+	SHAPE_SPHERE = 3,
+	SHAPE_SPECIAL1 = 4,
+	SHAPE_SPECIAL2 = 5,
+	SHAPE_SPECIAL3 = 6
+};
 
 int screenWidth = 1000;
 int screenHeight = 1000;
 
-int wireframe = 1;
-int filled = 1;
-int normal = 0;
-int segmentsX = 10;
-int segmentsY = 10;
-int	rotX = 0, rotY = 0, rotZ = 0;
+/** These are the live variables passed into GLUI ***/
+int  wireframe = 1;
+int  filled = 1;
+int  normal = 0;
+int  segmentsX = 10;
+int  segmentsY = 10;
+int	 rotX = 0;
+int	 rotY = 0;
+int	 rotZ = 0;
+int  scale = 50;
 
-int viewAngle = 45;
-int	camRotU = 0, camRotV = 0, camRotW = 0;
-
-float eyeX = 0, eyeY = 0, eyeZ = 0;
-float lookX = 0, lookY = 0, lookZ = 1;
-float upX = 0.0, upY = 1.0, upZ = 0.0;
-
+int	 camRotU = 0;
+int	 camRotV = 0;
+int	 camRotW = 0;
+int  viewAngle = 45;
+float eyeX = 0;
+float eyeY = 0;
+float eyeZ = 0;
+float lookX = 0;
+float lookY = 0;
+float lookZ = 1;
 float clipNear = 0.001;
 float clipFar = 10000;
+float upX = 0.0;
+float upY = 1.0;
+float upZ = 0.0;
 
+/**
+ * keyboard and mouse movement variables
+ */
 // tracks which keys are being held down
 GLboolean keysInUse[512]; 
-
-// tracks if the camera is rotating in +/- x, +/- y direction 
-// (from camera perspective)
+// tracks if the camera is rotating in +/- x, +/- y direction (from camera perspective)
 int rotationDirection[2] = { 0, 0 }; 
 
 int  main_window;
 
 /** these are the global variables used for rendering **/
+OBJ_TYPE objType = SHAPE_CUBE;
 Cube* cube = new Cube();
+TexturedCube* texturedCube = new TexturedCube();
 Cylinder* cylinder = new Cylinder();
 Cone* cone = new Cone();
 Sphere* sphere = new Sphere();
 Skybox* skybox;
 Shape* shape;
 Camera* camera = new Camera();
+
+/***************************************** callback_obj() ***********/
+
+void callback_obj(int id) {
+	switch (objType) {
+	case SHAPE_CUBE:
+		shape = texturedCube;
+		break;
+	case SHAPE_CYLINDER:
+		shape = cylinder;
+		break;
+	case SHAPE_CONE:
+		shape = cone;
+		break;
+	case SHAPE_SPHERE:
+		shape = sphere;
+		break;
+	case SHAPE_SPECIAL1:
+		shape = texturedCube;
+		break;
+	default:
+		shape = skybox;
+		//shape = texturedCube;
+		//shape = buildingPiece;
+	}
+}
 
 /***************************************** myGlutIdle() ***********/
 
@@ -129,17 +168,6 @@ void keyReleaseHandler(unsigned char key, int x, int y) {
 }
 
 void updateCameraPos(int deltaTime) {
-
-	camera->SetViewAngle(viewAngle);
-	camera->SetNearPlane(clipNear);
-	camera->SetFarPlane(clipFar);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	Matrix projection = camera->GetProjectionMatrix();
-	glMultMatrixd(projection.unpack());
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 
 	Point eyeP(eyeX, eyeY, eyeZ);
 
@@ -223,17 +251,9 @@ void updateCameraPos(int deltaTime) {
         upZ = v[2];
     }
 
-	eyeP = Point(eyeX, eyeY, eyeZ);
-	Vector lookV(lookX, lookY, lookZ);
-	Vector upV(upX, upY, upZ);
+}
 
-	camera->Orient(eyeP, lookV, upV);
-	camera->RotateV(camRotV);
-	camera->RotateU(camRotU);
-	camera->RotateW(camRotW);
-
-	Matrix modelView = camera->GetModelViewMatrix();
-	glMultMatrixd(modelView.unpack());
+void updateCameraLook(int deltaTime) {
 
 }
 
@@ -265,9 +285,32 @@ void myGlutDisplay(void)
 	glClearColor(.9f, .9f, .9f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	camera->SetViewAngle(viewAngle);
+	camera->SetNearPlane(clipNear);
+	camera->SetFarPlane(clipFar);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	Matrix projection = camera->GetProjectionMatrix();
+	glMultMatrixd(projection.unpack());
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
     int deltaTime = calcDeltaTime();
     updateCameraPos(deltaTime);
+    updateCameraLook(deltaTime);
+
+	Point eyeP(eyeX, eyeY, eyeZ);
+	Vector lookV(lookX, lookY, lookZ);
+	Vector upV(upX, upY, upZ);
+
+	camera->Orient(eyeP, lookV, upV);
+	camera->RotateV(camRotV);
+	camera->RotateU(camRotU);
+	camera->RotateW(camRotW);
+
+	Matrix modelView = camera->GetModelViewMatrix();
+	glMultMatrixd(modelView.unpack());
 
 	shape->setSegments(segmentsX, segmentsY);
 
@@ -295,6 +338,7 @@ void myGlutDisplay(void)
 
 void onExit()
 {
+	delete texturedCube;
 	delete cube;
 	delete cylinder;
 	delete cone;
@@ -426,6 +470,8 @@ int main(int argc, char* argv[])
 		->set_int_limits(0, 359);
 	(new GLUI_Spinner(object_panel, "Rotate Z:", &rotZ))
 		->set_int_limits(0, 359);
+	(new GLUI_Spinner(object_panel, "Scale:", &scale))
+		->set_int_limits(1, 100);
 
 	glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
 
@@ -434,6 +480,10 @@ int main(int argc, char* argv[])
 	/* We register the idle callback with GLUI, *not* with GLUT */
 	GLUI_Master.set_glutIdleFunc(myGlutIdle);
 
+	//BuildingPiece* buildingPiece = new BuildingPiece(25, 12, 12, BuildingLighting::STRIPED);
+	//shape = buildingPiece;
+	/* CommonBuilding* commonBuilding = new CommonBuilding(25, 12, 12, BuildingLighting::STRIPED); */
+	/* shape = commonBuilding; */
     shape = skybox;
 
 	glutMainLoop();

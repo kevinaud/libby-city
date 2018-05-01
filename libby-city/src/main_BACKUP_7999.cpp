@@ -34,6 +34,29 @@ using namespace std;
 int screenWidth = 1000;
 int screenHeight = 1000;
 
+<<<<<<< HEAD
+/** These are the live variables passed into GLUI ***/
+int  wireframe = 1;
+int  filled = 1;
+int  normal = 0;
+int  segmentsX = 10;
+int  segmentsY = 10;
+int	 rotX = 0;
+int	 rotY = 0;
+int	 rotZ = 0;
+int  scale = 50;
+
+int	 camRotU = 0;
+int	 camRotV = 0;
+int	 camRotW = 0;
+int  viewAngle = 45;
+float eyeX = 0;
+float eyeY = 0;
+float eyeZ = 0;
+float lookX = 0;
+float lookY = 0;
+float lookZ = 1;
+=======
 int wireframe = 1;
 int filled = 1;
 int normal = 0;
@@ -48,6 +71,7 @@ float eyeX = 0, eyeY = 0, eyeZ = 0;
 float lookX = 0, lookY = 0, lookZ = 1;
 float upX = 0.0, upY = 1.0, upZ = 0.0;
 
+>>>>>>> 145c870... did some cleanup
 float clipNear = 0.001;
 float clipFar = 10000;
 

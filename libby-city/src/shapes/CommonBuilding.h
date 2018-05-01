@@ -9,6 +9,8 @@
 #define WINDOW_SIZE 1
 // int randNum = rand()%(max-min + 1) + min;
 
+using namespace std;
+
 class CommonBuilding : public Shape {
 public:
 	CommonBuilding() {
