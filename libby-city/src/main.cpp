@@ -17,6 +17,9 @@
 #include "camera/Camera.h"
 #include "textures/textures.h"
 #include "config/config.h"
+#include "city/City.h"
+
+using namespace std;
 
 enum OBJ_TYPE {
 	SHAPE_CUBE = 0,
@@ -33,7 +36,7 @@ int screenHeight = 1000;
 
 /** These are the live variables passed into GLUI ***/
 int  wireframe = 1;
-int  fill = 1;
+int  filled = 1;
 int  normal = 0;
 int  segmentsX = 10;
 int  segmentsY = 10;
@@ -312,7 +315,7 @@ void myGlutDisplay(void)
 	shape->setSegments(segmentsX, segmentsY);
 
     glEnable(GL_LIGHTING);
-	if (fill) {
+	if (filled) {
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glColor3f(1, 1, 1);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -421,7 +424,7 @@ int main(int argc, char* argv[])
 
 	GLUI_Panel *render_panel = glui->add_panel("Render");
 	new GLUI_Checkbox(render_panel, "Wireframe", &wireframe);
-	new GLUI_Checkbox(render_panel, "Fill", &fill);
+	new GLUI_Checkbox(render_panel, "Fill", &filled);
 	new GLUI_Checkbox(render_panel, "Normal", &normal);
 	(new GLUI_Spinner(render_panel, "Segments X:", &segmentsX))
 		->set_int_limits(3, 60);
