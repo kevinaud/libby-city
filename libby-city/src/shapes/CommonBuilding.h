@@ -4,9 +4,10 @@
 #include "BuildingPiece.h"
 #include "Shape.h"
 #include <ctime>
+#include <vector>
 
 #define WINDOW_SIZE 1
-
+// int randNum = rand()%(max-min + 1) + min;
 
 class CommonBuilding : public Shape {
 public:
@@ -21,15 +22,16 @@ public:
 		this->columns_length_max = columns_length_max;
 		this->columns_width_max = columns_width_max;
 
+		createBuilding();
+
 		pieces = new BuildingPiece[4];
 		pieces[0] = BuildingPiece(24, 20, 20, texture);
-		pieces[1] = BuildingPiece(18, 15, 10, texture);
+		pieces[1] = BuildingPiece(25, 1, 1, texture);
 		pieces[2] = BuildingPiece(10, 10, 7, texture);
 		pieces[3] = BuildingPiece(8, 6, 8, texture);
 	};
 
 	~CommonBuilding() {
-		delete[] pieces;
 	};
 
 	void draw() {
@@ -49,9 +51,18 @@ public:
 	};
 
 private:
+	void createBuilding() {
+		float length = 0;
+		float width = 0;
+		float height = floors_max;
+
+		while (height > 0) {
+
+		}
+	}
 
 	GLuint texture;
-	BuildingPiece* pieces;
+	std::vector<BuildingPiece> pieces;
 	float columns_length_max;
 	float columns_width_max;
 	float floors_max;
