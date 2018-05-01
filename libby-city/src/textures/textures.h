@@ -10,6 +10,8 @@
 #define NUM_WINDOWS 64
 #define WINDOW_UNIT_SIZE 1.0/64.0
 
+using namespace std;
+
 enum BuildingLighting {
    SCATTER,
    STRIPED

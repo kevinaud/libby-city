@@ -2,9 +2,12 @@
 #define BUILDINGPIECE_H
 
 #include "Shape.h"
+#include "../textures/textures.h"
 #include <ctime>
 
 #define WINDOW_SIZE 1
+
+using namespace std;
 
 enum FaceType { XY, YZ, XZ, _XY, _YZ, _XZ };
 
