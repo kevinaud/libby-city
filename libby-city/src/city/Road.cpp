@@ -22,7 +22,6 @@ void Road::draw() {
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, roadTexture);
-    glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);
         glNormal3f(0.0, 0.0, 1.0);
         /* glTexCoord2f(0.0, 0.0); glVertex3f(-size,  size,  size); */
@@ -131,14 +130,6 @@ void Road::initialize() {
                 count++;
             }
         }
-    }
-
-    cout << "count " << count << endl;
-
-    for (int i = 0; i < width * length * 3; i++) {
-        //data[i] = 0x33;
-        /* int t = data[i]; */
-        /* cout << t << endl; */ 
     }
 
     GLuint texture;

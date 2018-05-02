@@ -1,9 +1,10 @@
 #ifndef CITY_H
 #define CITY_H
 
+#include "GL/glew.h"
+#include "GL/freeglut.h"
 #include "../shapes/Skybox.h"
 #include "../textures/textures.h"
-#include "../shapes/CommonBuilding.h"
 #include "Road.h"
 #include "CityBlock.h"
 
@@ -33,9 +34,11 @@ class City {
         // road
         Road* road;
 
-		BuildingPiece* buildingPiece;
-		CommonBuilding* commonBuilding;
-		CityBlock* cityBlock;
+		CityBlock* cityBlocks;
+
+        int getBuildingHeight(int row, int col);
+        float getBuildingOffsetX(int row, int col);
+        float getBuildingOffsetZ(int row, int col);
 };
 
 #endif

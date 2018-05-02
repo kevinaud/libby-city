@@ -101,7 +101,8 @@ int main(int argc, char* argv[]) {
 }
 
 void initCity() {
-    city = new City(24, 8);
+    // city = new City(24, 8);
+    city = new City(3, 2);
     city->setSkybox(new Skybox(
         project_dir + "libby-city/src/img/SunSetFront2048.bmp",
         project_dir + "libby-city/src/img/SunSetBack2048.bmp",
