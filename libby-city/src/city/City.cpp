@@ -1,9 +1,14 @@
 #include "City.h"
 
-City::City(int sizeX, int sizeY) {
-    this->sizeX = sizeX;
-    this->sizeY = sizeY;
-    this->road = new Road(sizeX, sizeY);
+City::City(int blocksWide, int blocksLong) {
+    this->blocksWide = blocksWide;
+    this->blocksLong = blocksLong;
+    this->width = blocksWide * CITY_BLOCK_WIDTH +
+                  (blocksWide + 1) * ROAD_WIDTH;
+    this->length = blocksLong * CITY_BLOCK_LENGTH +
+                  (blocksLong + 1) * ROAD_WIDTH;
+
+    this->road = new Road(blocksWide, blocksLong);
 }
 
 City::~City() {

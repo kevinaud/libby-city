@@ -93,7 +93,7 @@ class Skybox : public Shape {
         bool initialized = false;
 
         void drawCubeFace(GLuint texture) {
-            float size = 2.0f;
+            float size = 500.0f;
             glBindTexture(GL_TEXTURE_2D, texture);
             glBegin(GL_QUADS);
                 glNormal3f(0.0, 0.0, 1.0);

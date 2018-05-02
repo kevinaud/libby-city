@@ -31,9 +31,9 @@ int	rotX = 0, rotY = 0, rotZ = 0;
 int viewAngle = 45;
 int	camRotU = 0, camRotV = 0, camRotW = 0;
 
-float eyeX = 0, eyeY = 0, eyeZ = 0;
-float lookX = 0, lookY = 0, lookZ = 1;
-float upX = 0.0, upY = 1.0, upZ = 0.0;
+float eyeX = 0, eyeY = 5, eyeZ = 0;
+float lookX = 0, lookY = 0, lookZ = -1;
+float upX = 0.0, upY = 1.0, upZ = 0;
 
 float clipNear = 0.001;
 float clipFar = 10000;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 }
 
 void initCity() {
-    city = new City(1024, 1024);
+    city = new City(24, 8);
     city->setSkybox(new Skybox(
         project_dir + "libby-city/src/img/SunSetFront2048.bmp",
         project_dir + "libby-city/src/img/SunSetBack2048.bmp",
@@ -238,7 +238,7 @@ void updateCameraPos(int deltaTime) {
         fMovement = fMovement + dirY;
 
     fMovement = camera->getCamera2WorldMatrix() * fMovement;
-    GLfloat cMovementSpeed = 0.0000005;
+    GLfloat cMovementSpeed = 0.00005;
 
     // Trick to balance PC speed with movement
     GLfloat velocity = cMovementSpeed * deltaTime;
@@ -387,55 +387,6 @@ void initLighting() {
 /****************************************/
 void initGLUI() {
 	GLUI *glui = GLUI_Master.create_glui("GLUI");
-
-	GLUI_Panel *render_panel = glui->add_panel("Render");
-	new GLUI_Checkbox(render_panel, "Wireframe", &wireframe);
-	new GLUI_Checkbox(render_panel, "Fill", &filled);
-	new GLUI_Checkbox(render_panel, "Normal", &normal);
-	(new GLUI_Spinner(render_panel, "Segments X:", &segmentsX))
-		->set_int_limits(3, 60);
-	(new GLUI_Spinner(render_panel, "Segments Y:", &segmentsY))
-		->set_int_limits(3, 60);
-
-	GLUI_Panel *camera_panel = glui->add_panel("Camera");
-	(new GLUI_Spinner(camera_panel, "RotateV:", &camRotV))
-		->set_int_limits(-179, 179);
-	(new GLUI_Spinner(camera_panel, "RotateU:", &camRotU))
-		->set_int_limits(-179, 179);
-	(new GLUI_Spinner(camera_panel, "RotateW:", &camRotW))
-		->set_int_limits(-179, 179);
-	(new GLUI_Spinner(camera_panel, "Angle:", &viewAngle))
-		->set_int_limits(1, 179);
-
-	GLUI_Spinner* eyex_widget = glui->add_spinner_to_panel(camera_panel, "EyeX:", GLUI_SPINNER_FLOAT, &eyeX);
-	eyex_widget->set_float_limits(-5, 5);
-	GLUI_Spinner* eyey_widget = glui->add_spinner_to_panel(camera_panel, "EyeY:", GLUI_SPINNER_FLOAT, &eyeY);
-	eyey_widget->set_float_limits(-5, 5);
-	GLUI_Spinner* eyez_widget = glui->add_spinner_to_panel(camera_panel, "EyeZ:", GLUI_SPINNER_FLOAT, &eyeZ);
-	eyez_widget->set_float_limits(-5, 5);
-
-	GLUI_Spinner* lookx_widget = glui->add_spinner_to_panel(camera_panel, "LookX:", GLUI_SPINNER_FLOAT, &lookX);
-	lookx_widget->set_float_limits(-5, 5);
-	GLUI_Spinner* looky_widget = glui->add_spinner_to_panel(camera_panel, "LookY:", GLUI_SPINNER_FLOAT, &lookY);
-	looky_widget->set_float_limits(-5, 5);
-	GLUI_Spinner* lookz_widget = glui->add_spinner_to_panel(camera_panel, "LookZ:", GLUI_SPINNER_FLOAT, &lookZ);
-	lookz_widget->set_float_limits(-5, 5);
-
-	GLUI_Spinner* clipN_widget = glui->add_spinner_to_panel(camera_panel, "Near:", GLUI_SPINNER_FLOAT, &clipNear);
-	clipN_widget->set_float_limits(0, 10);
-	GLUI_Spinner* clipF_widget = glui->add_spinner_to_panel(camera_panel, "Far:", GLUI_SPINNER_FLOAT, &clipFar);
-	clipF_widget->set_float_limits(0, 10000);
-
-	glui->add_column(true);
-
-
-	GLUI_Panel *object_panel = glui->add_panel("Object");
-	(new GLUI_Spinner(object_panel, "Rotate X:", &rotX))
-		->set_int_limits(0, 359);
-	(new GLUI_Spinner(object_panel, "Rotate Y:", &rotY))
-		->set_int_limits(0, 359);
-	(new GLUI_Spinner(object_panel, "Rotate Z:", &rotZ))
-		->set_int_limits(0, 359);
 
 	glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
 

@@ -1,15 +1,16 @@
 #ifndef CITY_H
 #define CITY_H
 
-#include "shapes/Skybox.h"
-#include "textures/textures.h"
+#include "../shapes/Skybox.h"
+#include "../textures/textures.h"
 #include "Road.h"
+#include "CityBlock.h"
 
 using namespace std;
 
 class City {
     public:
-        City(int sizeX, int sizeY);
+        City(int blocksWide, int blocksLong);
         ~City();
 
         void setSkybox(Skybox* skybox);
@@ -17,9 +18,13 @@ class City {
         void draw();
 
     private:
-        // dimensions
-        int sizeX;
-        int sizeY;
+        // dimensions (units)
+        int width;
+        int length;
+
+        // dimensions (city blocks)
+        int blocksWide;
+        int blocksLong;
 
         // skybox
         Skybox* skybox;
