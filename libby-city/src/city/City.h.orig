@@ -3,7 +3,10 @@
 
 #include "../shapes/Skybox.h"
 #include "../textures/textures.h"
+<<<<<<< HEAD
+=======
 #include "../shapes/CommonBuilding.h"
+>>>>>>> 01e8039... I think i finished CommonBuilding
 #include "Road.h"
 #include "CityBlock.h"
 

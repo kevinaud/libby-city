@@ -239,7 +239,11 @@ void updateCameraPos(int deltaTime) {
         fMovement = fMovement + dirY;
 
     fMovement = camera->getCamera2WorldMatrix() * fMovement;
+<<<<<<< HEAD
+    GLfloat cMovementSpeed = 0.00005;
+=======
     GLfloat cMovementSpeed = 0.000005; // !!
+>>>>>>> 01e8039... I think i finished CommonBuilding
 
     // Trick to balance PC speed with movement
     GLfloat velocity = cMovementSpeed * deltaTime;

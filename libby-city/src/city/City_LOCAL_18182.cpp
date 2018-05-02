@@ -23,6 +23,6 @@ void City::draw() {
     if (!texturesInitialized) {
         initTextures(); 
     }
-    //skybox->draw();
-    //road->draw();
+    skybox->draw();
+    road->draw();
 }
