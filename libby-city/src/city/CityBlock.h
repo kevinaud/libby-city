@@ -6,16 +6,19 @@
 #define BUILDING_LENGTH 16 
 
 #include "../shapes/CommonBuilding.h"
+#include "../shapes/BasicBuilding.h"
+
+enum BuildingType { basic, common };
 
 using namespace std;
 
 class CityBlock {
     public:
-        CityBlock();
-		CityBlock(int maxBuildingHeight);
+        CityBlock(BuildingType buildingType);
+		CityBlock(BuildingType buildingType, int maxBuildingHeight);
 		void draw();
 	private:
-		vector<CommonBuilding> buildings;
+		vector<Building*> buildings;
 
 };
 

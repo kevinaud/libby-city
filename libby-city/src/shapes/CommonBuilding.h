@@ -2,18 +2,20 @@
 #define COMMONBUILDING_H
 
 #include "BuildingPiece.h"
+#include "Building.h"
 #include "Shape.h"
 #include "../textures/textures.h"
 #include <ctime>
 #include <algorithm>
 #include <vector>
+#include <iostream>
 
 #define WINDOW_SIZE 1
 // int randNum = rand()%(max-min + 1) + min;
 
 using namespace std;
 
-class CommonBuilding : public Shape {
+class CommonBuilding : public Building {
 public:
 	CommonBuilding() {
 	};
