@@ -65,9 +65,15 @@ void Road::initialize() {
     for (int i = 0; i < blocksWide + 1; i++) {
         for (int j = 0; j < ROAD_WIDTH; j++) {
             for (int k = 0; k < length; k++) {
-                roadBuffer[k][offset + j][0] = 0xB7;
-                roadBuffer[k][offset + j][1] = 0xB6;
-                roadBuffer[k][offset + j][2] = 0xA5;
+                if (j < 2 || j == 5 || j >=9) {
+                    roadBuffer[k][offset + j][0] = 0xA5;
+                    roadBuffer[k][offset + j][1] = 0xA5;
+                    roadBuffer[k][offset + j][2] = 0x9F;
+                } else {
+                    roadBuffer[k][offset + j][0] = 0x63;
+                    roadBuffer[k][offset + j][1] = 0x63;
+                    roadBuffer[k][offset + j][2] = 0x63;
+                }
             } 
         } 
         offset += ROAD_WIDTH + CITY_BLOCK_WIDTH;
@@ -77,27 +83,13 @@ void Road::initialize() {
     for (int i = 0; i < blocksLong + 1; i++) {
         for (int j = 0; j < ROAD_WIDTH; j++) {
             for (int k = 0; k < width; k++) {
-                roadBuffer[offset + j][k][0] = 0xB7;
-                roadBuffer[offset + j][k][1] = 0xB6;
-                roadBuffer[offset + j][k][2] = 0xA5;
+                roadBuffer[offset + j][k][0] = 0xA5;
+                roadBuffer[offset + j][k][1] = 0xA5;
+                roadBuffer[offset + j][k][2] = 0x9F;
             } 
         } 
         offset += ROAD_WIDTH + CITY_BLOCK_LENGTH;
     }
-
-/*     for (int i = 0; i < length; i++) { */
-/*         for (int j = 0; j < width; j++) { */
-/*             GLuint color; */
-/*             if (j % 2 == 0) { */
-/*                 color = 0x00; */ 
-/*             } else { */
-/*                 color = 0xFF; */ 
-/*             } */
-/*             for (int k = 0; k < 3; k++) { */
-/*                 roadBuffer[i][j][k] = color; */
-/*             } */
-/*         } */
-/*     } */
 
     GLubyte* data = new GLubyte[width * length * 3];
 
