@@ -3,6 +3,7 @@
 
 #include "../shapes/Skybox.h"
 #include "../textures/textures.h"
+#include "../shapes/CommonBuilding.h"
 #include "Road.h"
 #include "CityBlock.h"
 
@@ -31,6 +32,9 @@ class City {
 
         // road
         Road* road;
+
+		BuildingPiece* buildingPiece;
+		CommonBuilding* commonBuilding;
 };
 
 #endif

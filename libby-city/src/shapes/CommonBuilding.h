@@ -3,6 +3,7 @@
 
 #include "BuildingPiece.h"
 #include "Shape.h"
+#include "../textures/textures.h"
 #include <ctime>
 #include <vector>
 
@@ -14,60 +15,79 @@ using namespace std;
 class CommonBuilding : public Shape {
 public:
 	CommonBuilding() {
-		srand(time(0));
 	};
 
-	CommonBuilding(int floors_max, int columns_width_max, int columns_length_max, BuildingLighting lighting) {
-		srand(time(0));
-		this->texture = getSideTexture(lighting);
+	CommonBuilding(int floors_max, int columns_width_max, int columns_length_max, GLuint* lighting) {
+		this->texture = lighting;
 		this->floors_max = floors_max;
 		this->columns_length_max = columns_length_max;
 		this->columns_width_max = columns_width_max;
 
 		createBuilding();
+	};
 
-		/* pieces = new BuildingPiece[4]; */
-		/* pieces[0] = BuildingPiece(24, 20, 20, texture); */
-		/* pieces[1] = BuildingPiece(25, 1, 1, texture); */
-		/* pieces[2] = BuildingPiece(10, 10, 7, texture); */
-		/* pieces[3] = BuildingPiece(8, 6, 8, texture); */
+	CommonBuilding(int floors_max, GLuint* lighting) {
+		this->texture = lighting;
+		this->floors_max = rand() % (floors_max - (floors_max / 2) + 1) + (floors_max / 2);
+		this->columns_length_max = 16;
+		this->columns_width_max = 16;
+
+		createBuilding();
 	};
 
 	~CommonBuilding() {
 	};
 
 	void draw() {
-		pieces[0].draw();
-		glPushMatrix(); 
-			glTranslatef(-10, 0, -10);
-			pieces[1].draw();
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(15, 0, 0);
-			pieces[2].draw();
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(10, 0, 0);
-			pieces[3].draw();
-		glPopMatrix();
+		pieces.at(0).draw();
+		for (int i = 1; i < pieces.size(); i++) {
+			glPushMatrix();
+				glRotatef(rotations.at(i), 0, 1, 0);
+				glTranslatef(pieces.at(i).getWidth() / 2.0, 0, 0);
+				pieces.at(i).draw();
+			glPopMatrix();
+		}
+		
 	};
 
 private:
 	void createBuilding() {
-		float length = 0;
-		float width = 0;
-		float height = floors_max;
+		vector<int> possibleRotations = { 0, 90, 180, 270 };
+		
+		int mainLength = rand() % (columns_length_max - (columns_length_max/2)) + (columns_length_max/2);
+		int mainWidth = rand() % (columns_width_max - (columns_width_max/2)) + (columns_width_max/2);
+		int height = floors_max;
 
-		while (height > 0) {
+		pieces.push_back(BuildingPiece(height, mainWidth, mainLength, texture));
+		rotations.push_back(0);
 
+		int numTiers = 8;
+		int rotationIndex = 0;
+
+		int width = (mainWidth / 2);
+
+		for (int i = 0; i < numTiers; i++) {
+			int length = rand() % mainLength + 1;
+			width = rand() % ((columns_width_max/2) - width + 1) + width;
+			height = rand() % (floors_max - (floors_max/3) + 1) + (floors_max/3);
+			int rotation = possibleRotations.at(rotationIndex);
+
+			pieces.push_back(BuildingPiece(height, width, length, texture));
+			rotations.push_back(rotation);
+
+			if (rotationIndex == 3)
+				rotationIndex = 0;
+			else
+				rotationIndex++;
 		}
 	}
 
-	GLuint texture;
+	GLuint* texture;
 	std::vector<BuildingPiece> pieces;
-	float columns_length_max;
-	float columns_width_max;
-	float floors_max;
+	std::vector<int>rotations;
+	int columns_length_max;
+	int columns_width_max;
+	int floors_max;
 
 };
 

@@ -28,12 +28,10 @@ struct Face {
 class BuildingPiece : public Shape {
 public:
 	BuildingPiece() {
-		srand(time(0));
 		texture = 0;
 	};
 
-	BuildingPiece(int floors, int columns_width, int columns_length, GLuint textureInt) {
-		srand(time(0));
+	BuildingPiece(int floors, int columns_width, int columns_length, GLuint* textureInt) {
 		this->texture = textureInt;
 		this->columns_length = (float)columns_length*WINDOW_SIZE;
 		this->columns_width = (float)columns_width*WINDOW_SIZE;
@@ -77,6 +75,18 @@ public:
 		faces[_XZ].width = columns_width*WINDOW_SIZE;
 
 	};
+
+	int getWidth() {
+		return columns_width;
+	}
+
+	int getLength() {
+		return columns_length;
+	}
+
+	int getHeight() {
+		return height;
+	}
 
 	~BuildingPiece() {};
 
@@ -127,7 +137,7 @@ public:
 
 private:
 
-	GLuint texture;
+	GLuint* texture;
 	Face faces[6];
 	float columns_length;
 	float columns_width;
@@ -161,7 +171,7 @@ private:
 			glVertex3f(-face.width / 2.0, -face.height / 2.0, 0);
 		}
 		else {
-			glBindTexture(GL_TEXTURE_2D, texture);
+			glBindTexture(GL_TEXTURE_2D, *texture);
 			glTexCoord2f(face.textureCoordinates[0].x, face.textureCoordinates[0].y); glVertex3f(-face.width / 2.0, face.height / 2.0, 0);
 			glTexCoord2f(face.textureCoordinates[1].x, face.textureCoordinates[1].y); glVertex3f(face.width / 2.0, face.height / 2.0, 0);
 			glTexCoord2f(face.textureCoordinates[2].x, face.textureCoordinates[2].y); glVertex3f(face.width / 2.0, -face.height / 2.0, 0);

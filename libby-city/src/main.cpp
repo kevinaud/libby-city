@@ -86,6 +86,7 @@ void onExit();
  * MAIN
  */
 int main(int argc, char* argv[]) {
+	srand(time(0));
 	atexit(onExit);
 
     // set up all the glut / opengl / glui stuff
@@ -238,7 +239,7 @@ void updateCameraPos(int deltaTime) {
         fMovement = fMovement + dirY;
 
     fMovement = camera->getCamera2WorldMatrix() * fMovement;
-    GLfloat cMovementSpeed = 0.00005;
+    GLfloat cMovementSpeed = 0.000005; // !!
 
     // Trick to balance PC speed with movement
     GLfloat velocity = cMovementSpeed * deltaTime;
