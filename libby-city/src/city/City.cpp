@@ -10,7 +10,7 @@ City::City(int blocksWide, int blocksLong) {
 
     this->road = new Road(blocksWide, blocksLong);
 	//commonBuilding = new CommonBuilding(24, &textures.building.striped);
-	cityBlock = new CityBlock();
+	cityBlock = new CityBlock(BuildingType::basic);
 }
 
 City::~City() {
