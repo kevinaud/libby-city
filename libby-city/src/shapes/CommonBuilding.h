@@ -5,6 +5,7 @@
 #include "Shape.h"
 #include "../textures/textures.h"
 #include <ctime>
+#include <algorithm>
 #include <vector>
 
 #define WINDOW_SIZE 1
@@ -53,22 +54,56 @@ public:
 private:
 	void createBuilding() {
 		vector<int> possibleRotations = { 0, 90, 180, 270 };
-		
-		int mainLength = rand() % (columns_length_max - (columns_length_max/2)) + (columns_length_max/2);
-		int mainWidth = rand() % (columns_width_max - (columns_width_max/2)) + (columns_width_max/2);
+
+		int mainWidth = rand() % (columns_width_max - (columns_width_max / 2)) + (columns_width_max / 2);
+		if (mainWidth % 2 != 0) {
+			if (mainWidth = columns_width_max - 1) {
+				mainWidth -= 1;
+			}
+			else {
+				mainWidth += 1;
+			}
+		}
+		int lengthMin = min(mainWidth, (columns_length_max / 2));
+		int lengthMax = max(mainWidth, (columns_length_max / 2));
+		int mainLength = rand() % (lengthMax - lengthMin + 1) + lengthMin;
+		if (mainLength % 2 != 0) {
+			if (mainLength == lengthMax) {
+				mainLength -= 1;
+			}
+			else {
+				mainLength += 1;
+			}
+		}
 		int height = floors_max;
 
 		pieces.push_back(BuildingPiece(height, mainWidth, mainLength, texture));
 		rotations.push_back(0);
 
-		int numTiers = 8;
+		//int numTiers = 8;
+		int numTiers = 4;
 		int rotationIndex = 0;
 
-		int width = (mainWidth / 2);
 
 		for (int i = 0; i < numTiers; i++) {
-			int length = rand() % mainLength + 1;
-			width = rand() % ((columns_width_max/2) - width + 1) + width;
+			int length = rand() % (mainLength-2) + 1;
+			if (length % 2 != 0) {
+				if (length == mainLength - 1) {
+					length -= 1;
+				}
+				else {
+					length += 1;
+				}
+			}
+			int width = rand() % ((columns_width_max/2) - ((mainWidth / 2)+1) + 1) + ((mainWidth / 2)+1);
+			if (width % 2 != 0) {
+				if (width == columns_width_max/2) {
+					width -= 1;
+				}
+				else {
+					width += 1;
+				}
+			}
 			height = rand() % (floors_max - (floors_max/3) + 1) + (floors_max/3);
 			int rotation = possibleRotations.at(rotationIndex);
 
