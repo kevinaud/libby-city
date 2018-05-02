@@ -35,6 +35,7 @@ class City {
 
 		BuildingPiece* buildingPiece;
 		CommonBuilding* commonBuilding;
+		CityBlock* cityBlock;
 };
 
 #endif

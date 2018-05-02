@@ -9,6 +9,8 @@ City::City(int blocksWide, int blocksLong) {
                   (blocksLong + 1) * ROAD_WIDTH;
 
     this->road = new Road(blocksWide, blocksLong);
+	//commonBuilding = new CommonBuilding(24, &textures.building.striped);
+	cityBlock = new CityBlock();
 }
 
 City::~City() {
@@ -25,4 +27,6 @@ void City::draw() {
     }
     //skybox->draw();
     //road->draw();
+	//commonBuilding->draw();
+	cityBlock->draw();
 }
