@@ -25,8 +25,7 @@ void City::draw() {
     if (!texturesInitialized) {
         initTextures(); 
     }
-    //skybox->draw();
-    //road->draw();
-	//commonBuilding->draw();
+    skybox->draw();
+    road->draw();
 	cityBlock->draw();
 }

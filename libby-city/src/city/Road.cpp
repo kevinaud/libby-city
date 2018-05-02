@@ -40,8 +40,8 @@ typedef unique_ptr<GLubyte[]> GLubyteArray;
 typedef unique_ptr<GLubyteArray[]> GLubyteArray2D;
 
 void Road::initialize() {
-    //GLubyte*** roadBuffer = allocateRoadBuffer();
     auto roadBuffer = unique_ptr<GLubyteArray2D[]>(new GLubyteArray2D[length]);
+
     for (int i = 0; i < length; i++) {
         roadBuffer[i] = GLubyteArray2D(new GLubyteArray[width]);
         for (int j = 0; j < width; j++) {
@@ -49,6 +49,7 @@ void Road::initialize() {
         }
     }
 
+    // SET BASE COLOR
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < width; j++) {
             for (int k = 0; k < 3; k++) {
@@ -61,15 +62,39 @@ void Road::initialize() {
         }
     }
 
+    // DRAW VERTICAL ROADS
     int offset = 0;
     for (int i = 0; i < blocksWide + 1; i++) {
         for (int j = 0; j < ROAD_WIDTH; j++) {
             for (int k = 0; k < length; k++) {
-                if (j < 2 || j == 5 || j >=9) {
-                    roadBuffer[k][offset + j][0] = 0xA5;
-                    roadBuffer[k][offset + j][1] = 0xA5;
-                    roadBuffer[k][offset + j][2] = 0x9F;
-                } else {
+                roadBuffer[k][offset + j][0] = 0xA5;
+                roadBuffer[k][offset + j][1] = 0xA5;
+                roadBuffer[k][offset + j][2] = 0x9F;
+            } 
+        } 
+        offset += ROAD_WIDTH + CITY_BLOCK_WIDTH;
+    }
+
+    // DRAW HORIZONTAL ROADS
+    offset = 0;
+    for (int i = 0; i < blocksLong + 1; i++) {
+        for (int j = 0; j < ROAD_WIDTH; j++) {
+            for (int k = 0; k < width; k++) {
+                roadBuffer[offset + j][k][0] = 0xA5;
+                roadBuffer[offset + j][k][1] = 0xA5;
+                roadBuffer[offset + j][k][2] = 0x9F;
+            } 
+        } 
+        offset += ROAD_WIDTH + CITY_BLOCK_LENGTH;
+    }
+
+    // DRAW VERTICAL SIDEWALKS / MEDIAN
+    offset = 0;
+    for (int i = 0; i < blocksWide + 1; i++) {
+        for (int j = 0; j < ROAD_WIDTH; j++) {
+            for (int k = 0; k < length; k++) {
+                /* if (j < 2 || j == 5 || j >=9) { */
+                if ((j > 1 && j < 5) || (j > 5 && j < 9)) {
                     roadBuffer[k][offset + j][0] = 0x63;
                     roadBuffer[k][offset + j][1] = 0x63;
                     roadBuffer[k][offset + j][2] = 0x63;
@@ -79,13 +104,16 @@ void Road::initialize() {
         offset += ROAD_WIDTH + CITY_BLOCK_WIDTH;
     }
 
+    // DRAW HORIZONTAL SIDEWALKS / MEDIAN
     offset = 0;
     for (int i = 0; i < blocksLong + 1; i++) {
         for (int j = 0; j < ROAD_WIDTH; j++) {
             for (int k = 0; k < width; k++) {
-                roadBuffer[offset + j][k][0] = 0xA5;
-                roadBuffer[offset + j][k][1] = 0xA5;
-                roadBuffer[offset + j][k][2] = 0x9F;
+                if ((j > 1 && j < 5) || (j > 5 && j < 9)) {
+                    roadBuffer[offset + j][k][0] = 0x63;
+                    roadBuffer[offset + j][k][1] = 0x63;
+                    roadBuffer[offset + j][k][2] = 0x63;
+                }
             } 
         } 
         offset += ROAD_WIDTH + CITY_BLOCK_LENGTH;
