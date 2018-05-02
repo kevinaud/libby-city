@@ -2,6 +2,9 @@
 #define SHAPE_H
 
 #include "../util/Algebra.h"
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+
 
 class Shape {
 public:
