@@ -19,21 +19,25 @@ GLuint getBuildingTexture(BuildingLighting lighting) {
     glGenTextures  (1, &texture);
     glBindTexture  (GL_TEXTURE_2D, texture);
     glPixelStorei  (GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D   (
-        GL_TEXTURE_2D,
-        0,
-        GL_RGB,
-        width,
-        height,
-        0,
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        data
-    );
+    //glGenerateMipMap(GL_TEXTURE_2D);
+    //glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+    glTexImage2D   (
+        GL_TEXTURE_2D,    // target texture
+        0,                // level-of-detail number
+        GL_RGB,           // internal format
+        width,            // width of the texture (pixels)
+        height,           // height of the texture (pixels)
+        0,                // border (must be 0) 
+        GL_RGB,           // format of the pixel data
+        GL_UNSIGNED_BYTE, // data type of the pixel data 
+        data              // pointer to the image data in memory 
+    );
     glTexEnvf      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     free(data);

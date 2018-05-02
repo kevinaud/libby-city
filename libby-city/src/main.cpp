@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
 
 void initCity() {
     // city = new City(24, 8);
-    city = new City(3, 2);
+    city = new City(6, 2);
     city->setSkybox(new Skybox(
         project_dir + "libby-city/src/img/SunSetFront2048.bmp",
         project_dir + "libby-city/src/img/SunSetBack2048.bmp",
@@ -129,12 +129,12 @@ void myGlutDisplay(void)
 		city->draw();
 	}
 	
-	if (wireframe) {
-		glDisable(GL_POLYGON_OFFSET_FILL);
-		glColor3f(0.0, 0.0, 0.0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        city->draw();
-	}
+	/* if (wireframe) { */
+	/* 	glDisable(GL_POLYGON_OFFSET_FILL); */
+	/* 	glColor3f(0.0, 0.0, 0.0); */
+	/* 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
+        /* city->draw(); */
+	/* } */
 
 	camera->RotateV(-camRotV);
 	camera->RotateU(-camRotU);
@@ -240,7 +240,7 @@ void updateCameraPos(int deltaTime) {
         fMovement = fMovement + dirY;
 
     fMovement = camera->getCamera2WorldMatrix() * fMovement;
-    GLfloat cMovementSpeed = 0.000005; // !!
+    GLfloat cMovementSpeed = 0.00005; // !!
 
     // Trick to balance PC speed with movement
     GLfloat velocity = cMovementSpeed * deltaTime;
