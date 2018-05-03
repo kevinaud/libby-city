@@ -22,6 +22,8 @@ struct GlobalTextures {
     struct BuildingTextures {
         GLuint scatter;
         GLuint striped;
+        GLuint yellowScatter;
+        GLuint yellowStriped;
     };
     
     BuildingTextures building;
@@ -44,8 +46,8 @@ extern bool texturesInitialized;
  */
 void initTextures();
 
-GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighting);
-GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting);
+GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighting, bool noise);
+GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting, bool noise);
 
 void lightOnColor(GLubyte* baseColor, GLubyte* windowColor);
 void lightOffColor(GLubyte* windowColor);

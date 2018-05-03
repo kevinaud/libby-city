@@ -17,12 +17,40 @@ BuildingCityBlock::BuildingCityBlock(BuildingType buildingType) {
 BuildingCityBlock::BuildingCityBlock(BuildingType buildingType, int maxBuildingHeight) {
 	if (buildingType == BuildingType::common) {
 		for (int i = 0; i < 16; i++) {
-			buildings.push_back(new CommonBuilding(maxBuildingHeight, &textures.building.striped));
+            int randNum = rand() % 4;
+            switch (randNum) {
+                case 0: 
+			        buildings.push_back(new CommonBuilding(maxBuildingHeight, &textures.building.striped));
+                    break;
+                case 1: 
+			        buildings.push_back(new CommonBuilding(maxBuildingHeight, &textures.building.scatter));
+                    break;
+                case 2: 
+			        buildings.push_back(new CommonBuilding(maxBuildingHeight, &textures.building.yellowStriped));
+                    break;
+                case 3: 
+			        buildings.push_back(new CommonBuilding(maxBuildingHeight, &textures.building.yellowScatter));
+                    break;
+            }
 		}
 	}
 	else {
 		for (int i = 0; i < 16; i++) {
-			buildings.push_back(new BasicBuilding(maxBuildingHeight, &textures.building.striped));
+            int randNum = rand() % 4;
+            switch (randNum) {
+                case 0: 
+			        buildings.push_back(new BasicBuilding(maxBuildingHeight, &textures.building.striped));
+                    break;
+                case 1: 
+			        buildings.push_back(new BasicBuilding(maxBuildingHeight, &textures.building.scatter));
+                    break;
+                case 2: 
+			        buildings.push_back(new BasicBuilding(maxBuildingHeight, &textures.building.yellowStriped));
+                    break;
+                case 3: 
+			        buildings.push_back(new BasicBuilding(maxBuildingHeight, &textures.building.yellowScatter));
+                    break;
+            }
 		}
 	}
 }

@@ -4,17 +4,20 @@ GlobalTextures textures;
 bool texturesInitialized = false;
 
 void initTextures() {
-    GLubyte baseColor[3] = { 0xE2, 0xE0, 0x5A };
-    textures.building.scatter = getBuildingTexture(baseColor, BuildingLighting::SCATTER);
-    textures.building.striped = getBuildingTexture(baseColor, BuildingLighting::STRIPED);
+    GLubyte baseColor[3] = { 0xFF, 0xFF, 0xFF };
+    GLubyte yellowBaseColor[3] = { 0xF7, 0xF6, 0xAA };
+    textures.building.scatter = getBuildingTexture(baseColor, BuildingLighting::SCATTER, true);
+    textures.building.striped = getBuildingTexture(baseColor, BuildingLighting::STRIPED, true);
+    textures.building.yellowScatter = getBuildingTexture(yellowBaseColor, BuildingLighting::SCATTER, false);
+    textures.building.yellowStriped = getBuildingTexture(yellowBaseColor, BuildingLighting::STRIPED, false);
     texturesInitialized = true;
 }
 
-GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting) {
+GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting, bool noise) {
 
     int imgSize = 512;
     int width = imgSize, height = imgSize;
-    GLubyte* data = generateBuildingTextureData(baseColor, lighting);
+    GLubyte* data = generateBuildingTextureData(baseColor, lighting, noise);
     GLuint texture;
 
     glGenTextures  (1, &texture);
@@ -46,7 +49,7 @@ GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting) {
     return texture;
 }
 
-GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighting) {
+GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighting, bool noise) {
     int imgSize = 512;
     int width = imgSize, height = imgSize;
 
@@ -107,12 +110,37 @@ GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighti
                                     adjustedColor[i] = 0; 
                                 }
                             }
+                            /* for (int i = 0; i < 3; i++) { */
+                            /*     int noise = ((rand() % 25) - 12); */
+                            /*     if (noise > 0) { */
+                            /*         if (adjustedColor[i] + noise < adjustedColor[i]) { */
+                            /*             adjustedColor[i] = 0xFF; */ 
+                            /*         } else { */
+                            /*             adjustedColor[i] = adjustedColor[i] + noise; */
+                            /*         } */
+                            /*     } else if (noise < 0) { */
+                            /*         cout << "noise: " << noise << ", adjustedColor: " << (int)adjustedColor[i] << " "; */
+                            /*         int test = adjustedColor[i] + noise; */
+                            /*         cout << "test: " << test << " "; */
+                            /*         if (adjustedColor[i] + noise > adjustedColor[i]) { */
+                            /*             adjustedColor[i] = 0x00; */ 
+                            /*         } else { */
+                            /*             adjustedColor[i] = adjustedColor[i] + noise; */
+                            /*         } */
+                            /*         cout << "result: " << (int)adjustedColor[i] << endl; */
+                            /*     } */
+                            /* } */
                             /* adjustedColor[0] = windowColor[0] - fade; */
                             /* adjustedColor[1] = windowColor[1] - fade; */
                             /* adjustedColor[2] = windowColor[2] - fade; */
-                            data[ndx++] = std::min(adjustedColor[0] + ((rand() % 25) - 12), 255);
-                            data[ndx++] = std::min(adjustedColor[1] + ((rand() % 25) - 12), 255);
-                            data[ndx++] = std::min(adjustedColor[2] + ((rand() % 25) - 12), 255);
+                            if (noise) {
+                                adjustedColor[0] = std::min(adjustedColor[0] + ((rand() % 25) - 12), 255);
+                                adjustedColor[1] = std::min(adjustedColor[1] + ((rand() % 25) - 12), 255);
+                                adjustedColor[2] = std::min(adjustedColor[2] + ((rand() % 25) - 12), 255);
+                            }
+                            data[ndx++] = adjustedColor[0];
+                            data[ndx++] = adjustedColor[1];
+                            data[ndx++] = adjustedColor[2];
                         } else {
                             int fade = rand() % (5 * t);
                             
@@ -144,16 +172,13 @@ GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighti
 
 void lightOnColor(GLubyte* baseColor, GLubyte* windowColor) {
     int subtract = rand() % 50;
-    cout << subtract << endl;
     for (int i = 0; i < 3; i++) {
-        cout << (int)baseColor[i] << endl;
         if (baseColor[i] > subtract) {
             windowColor[i] = baseColor[i] - subtract; 
         } else {
             windowColor[i] = 0; 
         }
     }
-    cout << endl;
     /* if (baseColor[0] */
     /* windowColor[0] = baseColor[0] - subtract; */
     /* windowColor[1] = baseColor[1] - subtract; */
