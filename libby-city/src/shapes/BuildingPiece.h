@@ -91,6 +91,7 @@ public:
 	~BuildingPiece() {};
 
 	void draw() {
+        glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
 		glPushMatrix(); { // XY
 			glTranslatef(0, 0, columns_length / 2);
@@ -161,24 +162,27 @@ private:
 	}
 
 	void drawCubeFace(Face face) {
-		glBegin(GL_QUADS);
-		glNormal3f(0.0, 0.0, 1.0);
 
 		if (face.faceType == XZ || face.faceType == _XZ) {
-			glVertex3f(-face.width / 2.0, face.height / 2.0, 0);
-			glVertex3f(face.width / 2.0, face.height / 2.0, 0);
-			glVertex3f(face.width / 2.0, -face.height / 2.0, 0);
-			glVertex3f(-face.width / 2.0, -face.height / 2.0, 0);
+		    glBegin(GL_QUADS);
+                glNormal3f(0.0, 0.0, 1.0);
+                glVertex3f(-face.width / 2.0, face.height / 2.0, 0);
+                glVertex3f(face.width / 2.0, face.height / 2.0, 0);
+                glVertex3f(face.width / 2.0, -face.height / 2.0, 0);
+                glVertex3f(-face.width / 2.0, -face.height / 2.0, 0);
+		    glEnd();
 		}
 		else {
 			glBindTexture(GL_TEXTURE_2D, *texture);
-			glTexCoord2f(face.textureCoordinates[0].x, face.textureCoordinates[0].y); glVertex3f(-face.width / 2.0, face.height / 2.0, 0);
-			glTexCoord2f(face.textureCoordinates[1].x, face.textureCoordinates[1].y); glVertex3f(face.width / 2.0, face.height / 2.0, 0);
-			glTexCoord2f(face.textureCoordinates[2].x, face.textureCoordinates[2].y); glVertex3f(face.width / 2.0, -face.height / 2.0, 0);
-			glTexCoord2f(face.textureCoordinates[3].x, face.textureCoordinates[3].y); glVertex3f(-face.width / 2.0, -face.height / 2.0, 0);
+		    glBegin(GL_QUADS);
+                glNormal3f(0.0, 0.0, 1.0);
+                glTexCoord2f(face.textureCoordinates[0].x, face.textureCoordinates[0].y); glVertex3f(-face.width / 2.0, face.height / 2.0, 0);
+                glTexCoord2f(face.textureCoordinates[1].x, face.textureCoordinates[1].y); glVertex3f(face.width / 2.0, face.height / 2.0, 0);
+                glTexCoord2f(face.textureCoordinates[2].x, face.textureCoordinates[2].y); glVertex3f(face.width / 2.0, -face.height / 2.0, 0);
+                glTexCoord2f(face.textureCoordinates[3].x, face.textureCoordinates[3].y); glVertex3f(-face.width / 2.0, -face.height / 2.0, 0);
+		    glEnd();
 		}
 		
-		glEnd();
 	}
 };
 

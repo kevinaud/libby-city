@@ -14,21 +14,14 @@ Road::Road(int blocksWide, int blocksLong) {
 void Road::draw() {
     if (!initialized) {
         initialize(); 
-        cout << width << endl;
-        cout << length << endl;
     }
     
     float size = 2.0f;
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, roadTexture);
-    glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);
         glNormal3f(0.0, 0.0, 1.0);
-        /* glTexCoord2f(0.0, 0.0); glVertex3f(-size,  size,  size); */
-        /* glTexCoord2f(1.0, 0.0); glVertex3f( size,  size,  size); */
-        /* glTexCoord2f(1.0, 1.0); glVertex3f( size, -size,  size); */
-        /* glTexCoord2f(0.0, 1.0); glVertex3f(-size, -size,  size); */
         glTexCoord2f(0.0, 0.0); glVertex3f(-width / 2.0, 0,  length / 2.0);
         glTexCoord2f(1.0, 0.0); glVertex3f( width / 2.0, 0,  length / 2.0);
         glTexCoord2f(1.0, 1.0); glVertex3f( width / 2.0, 0, -length / 2.0);
@@ -40,8 +33,8 @@ typedef unique_ptr<GLubyte[]> GLubyteArray;
 typedef unique_ptr<GLubyteArray[]> GLubyteArray2D;
 
 void Road::initialize() {
-    //GLubyte*** roadBuffer = allocateRoadBuffer();
     auto roadBuffer = unique_ptr<GLubyteArray2D[]>(new GLubyteArray2D[length]);
+
     for (int i = 0; i < length; i++) {
         roadBuffer[i] = GLubyteArray2D(new GLubyteArray[width]);
         for (int j = 0; j < width; j++) {
@@ -49,59 +42,73 @@ void Road::initialize() {
         }
     }
 
+    // SET BASE COLOR
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < width; j++) {
-            for (int k = 0; k < 3; k++) {
-                if (j % 2 == 1) {
-                    roadBuffer[i][j][k] = 0x00;
-                } else {
-                    roadBuffer[i][j][k] = 0x33;
-                }
-            }
+            roadBuffer[i][j][0] = 0x1E;
+            roadBuffer[i][j][1] = 0x44;
+            roadBuffer[i][j][2] = 0x1C;
         }
     }
 
+    // DRAW VERTICAL ROADS
     int offset = 0;
     for (int i = 0; i < blocksWide + 1; i++) {
         for (int j = 0; j < ROAD_WIDTH; j++) {
             for (int k = 0; k < length; k++) {
-                roadBuffer[k][offset + j][0] = 0xB7;
-                roadBuffer[k][offset + j][1] = 0xB6;
-                roadBuffer[k][offset + j][2] = 0xA5;
+                roadBuffer[k][offset + j][0] = 0xA5;
+                roadBuffer[k][offset + j][1] = 0xA5;
+                roadBuffer[k][offset + j][2] = 0x9F;
             } 
         } 
         offset += ROAD_WIDTH + CITY_BLOCK_WIDTH;
     }
 
+    // DRAW HORIZONTAL ROADS
     offset = 0;
     for (int i = 0; i < blocksLong + 1; i++) {
         for (int j = 0; j < ROAD_WIDTH; j++) {
             for (int k = 0; k < width; k++) {
-                roadBuffer[offset + j][k][0] = 0xB7;
-                roadBuffer[offset + j][k][1] = 0xB6;
-                roadBuffer[offset + j][k][2] = 0xA5;
+                roadBuffer[offset + j][k][0] = 0xA5;
+                roadBuffer[offset + j][k][1] = 0xA5;
+                roadBuffer[offset + j][k][2] = 0x9F;
             } 
         } 
         offset += ROAD_WIDTH + CITY_BLOCK_LENGTH;
     }
 
-/*     for (int i = 0; i < length; i++) { */
-/*         for (int j = 0; j < width; j++) { */
-/*             GLuint color; */
-/*             if (j % 2 == 0) { */
-/*                 color = 0x00; */ 
-/*             } else { */
-/*                 color = 0xFF; */ 
-/*             } */
-/*             for (int k = 0; k < 3; k++) { */
-/*                 roadBuffer[i][j][k] = color; */
-/*             } */
-/*         } */
-/*     } */
+    // DRAW VERTICAL SIDEWALKS / MEDIAN
+    offset = 0;
+    for (int i = 0; i < blocksWide + 1; i++) {
+        for (int j = 0; j < ROAD_WIDTH; j++) {
+            for (int k = 0; k < length; k++) {
+                /* if (j < 2 || j == 5 || j >=9) { */
+                if ((j > 1 && j < 5) || (j > 5 && j < 9)) {
+                    roadBuffer[k][offset + j][0] = 0x63;
+                    roadBuffer[k][offset + j][1] = 0x63;
+                    roadBuffer[k][offset + j][2] = 0x63;
+                }
+            } 
+        } 
+        offset += ROAD_WIDTH + CITY_BLOCK_WIDTH;
+    }
+
+    // DRAW HORIZONTAL SIDEWALKS / MEDIAN
+    offset = 0;
+    for (int i = 0; i < blocksLong + 1; i++) {
+        for (int j = 0; j < ROAD_WIDTH; j++) {
+            for (int k = 0; k < width; k++) {
+                if ((j > 1 && j < 5) || (j > 5 && j < 9)) {
+                    roadBuffer[offset + j][k][0] = 0x63;
+                    roadBuffer[offset + j][k][1] = 0x63;
+                    roadBuffer[offset + j][k][2] = 0x63;
+                }
+            } 
+        } 
+        offset += ROAD_WIDTH + CITY_BLOCK_LENGTH;
+    }
 
     GLubyte* data = new GLubyte[width * length * 3];
-
-    cout << width * length * 3 << endl;
 
     int count = 0;
     for (int i = 0; i < length; i++) {
@@ -111,14 +118,6 @@ void Road::initialize() {
                 count++;
             }
         }
-    }
-
-    cout << "count " << count << endl;
-
-    for (int i = 0; i < width * length * 3; i++) {
-        //data[i] = 0x33;
-        /* int t = data[i]; */
-        /* cout << t << endl; */ 
     }
 
     GLuint texture;

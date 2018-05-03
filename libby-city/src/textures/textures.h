@@ -5,6 +5,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <algorithm>
+#include <iostream>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "../util/bmpread.h"
@@ -43,10 +44,10 @@ extern bool texturesInitialized;
  */
 void initTextures();
 
-GLubyte* generateBuildingTextureData(BuildingLighting lighting);
-GLuint getBuildingTexture(BuildingLighting lighting);
+GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighting);
+GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting);
 
-void lightOnColor(GLubyte* windowColor);
+void lightOnColor(GLubyte* baseColor, GLubyte* windowColor);
 void lightOffColor(GLubyte* windowColor);
 
 

@@ -4,36 +4,41 @@ GlobalTextures textures;
 bool texturesInitialized = false;
 
 void initTextures() {
-    textures.building.scatter = getBuildingTexture(BuildingLighting::SCATTER);
-    textures.building.striped = getBuildingTexture(BuildingLighting::STRIPED);
+    GLubyte baseColor[3] = { 0xE2, 0xE0, 0x5A };
+    textures.building.scatter = getBuildingTexture(baseColor, BuildingLighting::SCATTER);
+    textures.building.striped = getBuildingTexture(baseColor, BuildingLighting::STRIPED);
     texturesInitialized = true;
 }
 
-GLuint getBuildingTexture(BuildingLighting lighting) {
+GLuint getBuildingTexture(GLubyte* baseColor, BuildingLighting lighting) {
 
     int imgSize = 512;
     int width = imgSize, height = imgSize;
-    GLubyte* data = generateBuildingTextureData(lighting);
+    GLubyte* data = generateBuildingTextureData(baseColor, lighting);
     GLuint texture;
 
     glGenTextures  (1, &texture);
     glBindTexture  (GL_TEXTURE_2D, texture);
     glPixelStorei  (GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D   (
-        GL_TEXTURE_2D,
-        0,
-        GL_RGB,
-        width,
-        height,
-        0,
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        data
-    );
+    //glGenerateMipMap(GL_TEXTURE_2D);
+    //glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+    glTexImage2D   (
+        GL_TEXTURE_2D,    // target texture
+        0,                // level-of-detail number
+        GL_RGB,           // internal format
+        width,            // width of the texture (pixels)
+        height,           // height of the texture (pixels)
+        0,                // border (must be 0) 
+        GL_RGB,           // format of the pixel data
+        GL_UNSIGNED_BYTE, // data type of the pixel data 
+        data              // pointer to the image data in memory 
+    );
     glTexEnvf      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     free(data);
@@ -41,7 +46,7 @@ GLuint getBuildingTexture(BuildingLighting lighting) {
     return texture;
 }
 
-GLubyte* generateBuildingTextureData(BuildingLighting lighting) {
+GLubyte* generateBuildingTextureData(GLubyte* baseColor, BuildingLighting lighting) {
     int imgSize = 512;
     int width = imgSize, height = imgSize;
 
@@ -79,7 +84,7 @@ GLubyte* generateBuildingTextureData(BuildingLighting lighting) {
             }
 
             if (lightOn) {
-                 lightOnColor(windowColor);
+                 lightOnColor(baseColor, windowColor);
             } else {
                  lightOffColor(windowColor);
             }
@@ -95,9 +100,16 @@ GLubyte* generateBuildingTextureData(BuildingLighting lighting) {
                         if (lightOn) {
                             GLubyte adjustedColor[3];
                             int fade = rand() % (30 * t);
-                            adjustedColor[0] = windowColor[0] - fade;
-                            adjustedColor[1] = windowColor[1] - fade;
-                            adjustedColor[2] = windowColor[2] - fade;
+                            for (int i = 0; i < 3; i++) {
+                                if (windowColor[i] >= fade) {
+                                    adjustedColor[i] = windowColor[i] - fade; 
+                                } else {
+                                    adjustedColor[i] = 0; 
+                                }
+                            }
+                            /* adjustedColor[0] = windowColor[0] - fade; */
+                            /* adjustedColor[1] = windowColor[1] - fade; */
+                            /* adjustedColor[2] = windowColor[2] - fade; */
                             data[ndx++] = std::min(adjustedColor[0] + ((rand() % 25) - 12), 255);
                             data[ndx++] = std::min(adjustedColor[1] + ((rand() % 25) - 12), 255);
                             data[ndx++] = std::min(adjustedColor[2] + ((rand() % 25) - 12), 255);
@@ -130,11 +142,22 @@ GLubyte* generateBuildingTextureData(BuildingLighting lighting) {
 }
 
 
-void lightOnColor(GLubyte* windowColor) {
+void lightOnColor(GLubyte* baseColor, GLubyte* windowColor) {
     int subtract = rand() % 50;
-    windowColor[0] = 0xFF - subtract;
-    windowColor[1] = 0xFF - subtract;
-    windowColor[2] = 0xFF - subtract;
+    cout << subtract << endl;
+    for (int i = 0; i < 3; i++) {
+        cout << (int)baseColor[i] << endl;
+        if (baseColor[i] > subtract) {
+            windowColor[i] = baseColor[i] - subtract; 
+        } else {
+            windowColor[i] = 0; 
+        }
+    }
+    cout << endl;
+    /* if (baseColor[0] */
+    /* windowColor[0] = baseColor[0] - subtract; */
+    /* windowColor[1] = baseColor[1] - subtract; */
+    /* windowColor[2] = baseColor[2] - subtract; */
 }
 
 void lightOffColor(GLubyte* windowColor) {

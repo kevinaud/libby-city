@@ -1,11 +1,15 @@
 #ifndef CITY_H
 #define CITY_H
 
+#include <vector>
+#include "GL/glew.h"
+#include "GL/freeglut.h"
 #include "../shapes/Skybox.h"
 #include "../textures/textures.h"
-#include "../shapes/CommonBuilding.h"
 #include "Road.h"
 #include "CityBlock.h"
+#include "BuildingCityBlock.h"
+#include "ParkCityBlock.h"
 
 using namespace std;
 
@@ -33,9 +37,13 @@ class City {
         // road
         Road* road;
 
-		BuildingPiece* buildingPiece;
-		CommonBuilding* commonBuilding;
-		CityBlock* cityBlock;
+		vector<CityBlock*> cityBlocks;
+
+        int getBuildingHeight(int row, int col);
+        float gaussianDist(float x, float a, float b, float c);
+
+        float getBuildingOffsetX(int row, int col);
+        float getBuildingOffsetZ(int row, int col);
 };
 
 #endif
