@@ -35,8 +35,8 @@ float eyeX = 0, eyeY = 5, eyeZ = 0;
 float lookX = 0, lookY = 0, lookZ = -1;
 float upX = 0.0, upY = 1.0, upZ = 0;
 
-float clipNear = 0.001;
-float clipFar = 10000;
+float clipNear = 1;
+float clipFar = 3000;
 
 // tracks which keys are being held down
 GLboolean keysInUse[512]; 
@@ -49,9 +49,19 @@ int  main_window;
 
 /** these are the global variables used for rendering **/
 City* city;
+Skybox* skyboxDay;
+Skybox* skyboxNight;
+Skybox* skyboxSunSet;
 Camera* camera = new Camera();
 
 int previousTime = 0;
+
+enum SKYBOX_TYPE {
+	DAY = 0,
+	NIGHT = 1,
+    SUNSET = 2
+};
+SKYBOX_TYPE skyboxType = DAY;
 
 /********************************************************
  * Function Definitions
@@ -70,6 +80,9 @@ void drawAxes();
 void myGlutDisplay(void);
 void myGlutIdle(void);
 void myGlutReshape(int x, int y);
+
+// GLUI callbacks
+void callback_skybox(int id);
 
 // city initialization
 void initCity();
@@ -102,15 +115,32 @@ int main(int argc, char* argv[]) {
 
 void initCity() {
     // city = new City(24, 8);
-    city = new City(6, 2);
-    city->setSkybox(new Skybox(
+    skyboxDay = new Skybox(
+        project_dir + "libby-city/src/img/TropicalSunnyDayFront2048.bmp",
+        project_dir + "libby-city/src/img/TropicalSunnyDayBack2048.bmp",
+        project_dir + "libby-city/src/img/TropicalSunnyDayRight2048.bmp",
+        project_dir + "libby-city/src/img/TropicalSunnyDayLeft2048.bmp",
+        project_dir + "libby-city/src/img/TropicalSunnyDayUp2048.bmp",
+        project_dir + "libby-city/src/img/TropicalSunnyDayDown2048.bmp"
+    );
+    skyboxNight = new Skybox(
+        project_dir + "libby-city/src/img/FullMoonFront2048.bmp",
+        project_dir + "libby-city/src/img/FullMoonBack2048.bmp",
+        project_dir + "libby-city/src/img/FullMoonRight2048.bmp",
+        project_dir + "libby-city/src/img/FullMoonLeft2048.bmp",
+        project_dir + "libby-city/src/img/FullMoonUp2048.bmp",
+        project_dir + "libby-city/src/img/FullMoonDown2048.bmp"
+    );
+    skyboxSunSet = new Skybox(
         project_dir + "libby-city/src/img/SunSetFront2048.bmp",
         project_dir + "libby-city/src/img/SunSetBack2048.bmp",
         project_dir + "libby-city/src/img/SunSetRight2048.bmp",
         project_dir + "libby-city/src/img/SunSetLeft2048.bmp",
         project_dir + "libby-city/src/img/SunSetUp2048.bmp",
         project_dir + "libby-city/src/img/SunSetDown2048.bmp"
-    ));
+    );
+    city = new City(13, 6);
+    city->setSkybox(skyboxDay);
 }
 
 void myGlutDisplay(void)
@@ -163,6 +193,20 @@ void myGlutReshape(int x, int y)
 	camera->SetScreenSize(x, y);
 
 	glutPostRedisplay();
+}
+
+void callback_skybox(int id) {
+	switch (skyboxType) {
+        case DAY:
+            city->setSkybox(skyboxDay);
+            break;
+        case NIGHT:
+            city->setSkybox(skyboxNight);
+            break;
+        case SUNSET:
+            city->setSkybox(skyboxSunSet);
+            break;
+	}
 }
 
 void mouseMoveHandler(int x, int y) {
@@ -391,7 +435,12 @@ void initGLUI() {
 	GLUI *glui = GLUI_Master.create_glui("GLUI");
 
 	glui->add_button("Quit", 0, (GLUI_Update_CB)exit);
-
+GLUI_Panel *obj_panel = glui->add_panel("Object Type");
+	GLUI_RadioGroup *group1 =
+		glui->add_radiogroup_to_panel(obj_panel, (int*)(&skyboxType), 3, callback_skybox);
+	glui->add_radiobutton_to_group(group1, "Day");
+	glui->add_radiobutton_to_group(group1, "Night");
+	glui->add_radiobutton_to_group(group1, "Sun Set");
 	glui->set_main_gfx_window(main_window);
 
 	/* We register the idle callback with GLUI, *not* with GLUT */

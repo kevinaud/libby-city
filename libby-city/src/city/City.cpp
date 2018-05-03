@@ -9,12 +9,23 @@ City::City(int blocksWide, int blocksLong) {
                   (blocksLong + 1) * ROAD_WIDTH;
 
     this->road = new Road(blocksWide, blocksLong);
-	cityBlocks = new CityBlock[blocksWide * blocksLong];
+	//cityBlocks = new CityBlock[blocksWide * blocksLong];
 
     for (int i = 0; i < blocksLong; i++) {
         for (int j = 0; j < blocksWide; j++) {
-            cout << i*blocksLong + j << endl;
-            cityBlocks[i*blocksWide + j] = CityBlock(getBuildingHeight(i, j));
+            if (rand() % 8 != 1) {
+                BuildingType type;
+
+                /* if (rand() % 2 == 1) { */
+                    type = BuildingType::common; 
+                /* } else { */
+                /*     type = BuildingType::basic; */ 
+                /* } */
+
+                cityBlocks.push_back(new BuildingCityBlock(type, getBuildingHeight(i, j)));
+            } else {
+                cityBlocks.push_back(new ParkCityBlock());
+            }
         }
     }
 }
@@ -39,24 +50,38 @@ void City::draw() {
             int translateX = getBuildingOffsetX(i, j);
             int translateZ = getBuildingOffsetZ(i, j);
             glTranslatef(translateX - 8.0, 0, (-1.0 * translateZ) + 13.0);
-            cityBlocks[i*blocksWide + j].draw();
+            cityBlocks[i*blocksWide + j]->draw();
             glPopMatrix();
         }
     }
 }
 
 int City::getBuildingHeight(int row, int col) {
-    float e = 2.71828;
-    float a = 40;
+    float a = 55;
     float b = blocksWide / 2.0;
-    float c = 1.0;
+    float c = 2;
 
-    float top = pow(col-b, 2);
-    float bot = 2 * pow(2.0,2.0);
+    float colResult = gaussianDist(col, a, b, c);
+
+    b = blocksLong / 2.0;
+    c *= blocksLong / (1.0 * blocksWide);
+    float rowResult = gaussianDist(row, a, b, c);
+
+    float result = min(colResult, rowResult);
+    result += 10;
+
+    return result;
+}
+
+float City::gaussianDist(float x, float a, float b, float c) {
+
+    float e = 2.71828;
+
+    float top = pow(x-b, 2);
+    float bot = 2 * pow(c,2.0);
     float exp = -1.0 * (top / bot);
     float result = pow(e, exp);
     result = a * result;
-    result += 20;
 
     return result;
 }

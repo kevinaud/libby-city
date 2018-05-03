@@ -32,8 +32,8 @@ public:
 	CommonBuilding(int floors_max, GLuint* lighting) {
 		this->texture = lighting;
 		this->floors_max = rand() % (floors_max - (floors_max / 2) + 1) + (floors_max / 2);
-		this->columns_length_max = 16;
-		this->columns_width_max = 16;
+		this->columns_length_max = 12;
+		this->columns_width_max = 12;
 
 		createBuilding();
 	};

@@ -14,8 +14,6 @@ Road::Road(int blocksWide, int blocksLong) {
 void Road::draw() {
     if (!initialized) {
         initialize(); 
-        cout << width << endl;
-        cout << length << endl;
     }
     
     float size = 2.0f;
@@ -24,10 +22,6 @@ void Road::draw() {
     glBindTexture(GL_TEXTURE_2D, roadTexture);
     glBegin(GL_QUADS);
         glNormal3f(0.0, 0.0, 1.0);
-        /* glTexCoord2f(0.0, 0.0); glVertex3f(-size,  size,  size); */
-        /* glTexCoord2f(1.0, 0.0); glVertex3f( size,  size,  size); */
-        /* glTexCoord2f(1.0, 1.0); glVertex3f( size, -size,  size); */
-        /* glTexCoord2f(0.0, 1.0); glVertex3f(-size, -size,  size); */
         glTexCoord2f(0.0, 0.0); glVertex3f(-width / 2.0, 0,  length / 2.0);
         glTexCoord2f(1.0, 0.0); glVertex3f( width / 2.0, 0,  length / 2.0);
         glTexCoord2f(1.0, 1.0); glVertex3f( width / 2.0, 0, -length / 2.0);
@@ -51,13 +45,9 @@ void Road::initialize() {
     // SET BASE COLOR
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < width; j++) {
-            for (int k = 0; k < 3; k++) {
-                if (j % 2 == 1) {
-                    roadBuffer[i][j][k] = 0x00;
-                } else {
-                    roadBuffer[i][j][k] = 0x33;
-                }
-            }
+            roadBuffer[i][j][0] = 0x1E;
+            roadBuffer[i][j][1] = 0x44;
+            roadBuffer[i][j][2] = 0x1C;
         }
     }
 
@@ -119,8 +109,6 @@ void Road::initialize() {
     }
 
     GLubyte* data = new GLubyte[width * length * 3];
-
-    cout << width * length * 3 << endl;
 
     int count = 0;
     for (int i = 0; i < length; i++) {

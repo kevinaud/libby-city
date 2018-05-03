@@ -91,6 +91,7 @@ public:
 	~BuildingPiece() {};
 
 	void draw() {
+        glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
 		glPushMatrix(); { // XY
 			glTranslatef(0, 0, columns_length / 2);
