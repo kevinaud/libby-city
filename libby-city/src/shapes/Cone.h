@@ -1,4 +1,4 @@
-#ifndef COHE_H
+#ifndef CONE_H
 #define CONE_H
 
 #include "Shape.h"
@@ -7,11 +7,13 @@
 
 class Cone : public Shape {
 public:
-	Cone() {};
+	Cone() {
+		m_segmentsX = 10;
+		m_segmentsY = 10;
+	};
 	~Cone() {};
 
 	void draw() {
-
 		drawBody();
 
 		glPushMatrix();
@@ -35,10 +37,10 @@ private:
 		float z = 0.0;
 		float y = -0.5;
 		float angle = 2 * PI / (float)m_segmentsX;
-		float height = 1.0 / (float)m_segmentsY;
+		float height = 3.0 / (float)m_segmentsY; // !!
 
-		float radius = 0.5;
-		float radius_delta = 0.5 / (float)m_segmentsY;
+		float radius = 2.0; // !!
+		float radius_delta = 2.0 / (float)m_segmentsY; // !!
 
 		glBegin(GL_TRIANGLES);
 		for (int i = 0; i < m_segmentsY; i++) {
@@ -79,7 +81,7 @@ private:
 	};
 
 	void drawCap() {
-		float x = 0.5;
+		float x = 2.0; // !!
 		float z = 0.0;
 		float angle = 2 * PI / (float)m_segmentsX;
 		glBegin(GL_TRIANGLES);
@@ -101,7 +103,7 @@ private:
 	void drawBodyNormal() {
 		float x = 0.5;
 		float z = 0.0;
-		float y = -0.5;
+		float y = 0;
 		float angle = 2 * PI / (float)m_segmentsX;
 		float height = 1.0 / (float)m_segmentsY;
 

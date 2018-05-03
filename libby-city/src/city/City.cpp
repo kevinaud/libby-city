@@ -39,9 +39,11 @@ void City::setSkybox(Skybox* skybox) {
 }
 
 void City::draw() {
+	
     if (!texturesInitialized) {
         initTextures(); 
     }
+	
     skybox->draw();
     road->draw();
     for (int i = 0; i < blocksLong; i++) {
@@ -54,6 +56,13 @@ void City::draw() {
             glPopMatrix();
         }
     }
+	
+	//commonBuilding->draw();
+	//tree->draw();
+	//cone->draw();
+	//cityBlock->draw();
+	//parkCityBlock->draw();
+
 }
 
 int City::getBuildingHeight(int row, int col) {

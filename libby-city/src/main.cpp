@@ -139,7 +139,7 @@ void initCity() {
         project_dir + "libby-city/src/img/SunSetUp2048.bmp",
         project_dir + "libby-city/src/img/SunSetDown2048.bmp"
     );
-    city = new City(13, 6);
+    city = new City(11, 6);
     city->setSkybox(skyboxDay);
 }
 

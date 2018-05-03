@@ -2,7 +2,8 @@
 #define PARK_CITY_BLOCK_H
 
 #include "CityBlock.h"
-#include "../shapes/Cylinder.h"
+#include "../shapes/Tree.h"
+#include <vector>
 
 using namespace std;
 
@@ -11,7 +12,10 @@ class ParkCityBlock : public CityBlock {
         ParkCityBlock();
 		void draw();
 	private:
-        Cylinder* c;
+        vector<Tree> trees;
+		vector<float> xTranslations;
+		vector<float> zTranslations;
+		int numTrees;
 };
 
 #endif
