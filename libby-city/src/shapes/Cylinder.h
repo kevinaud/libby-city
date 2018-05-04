@@ -5,7 +5,10 @@
 
 class Cylinder : public Shape {
 public:
-	Cylinder() {};
+	Cylinder() {
+		m_segmentsX = 10;
+		m_segmentsY = 10;
+	};
 	~Cylinder() {};
 
 	void draw() {

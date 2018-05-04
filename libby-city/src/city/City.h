@@ -10,6 +10,7 @@
 #include "CityBlock.h"
 #include "BuildingCityBlock.h"
 #include "ParkCityBlock.h"
+#include "../shapes/Tree.h"
 
 using namespace std;
 
@@ -36,6 +37,12 @@ class City {
 
         // road
         Road* road;
+
+		//Tree* tree = new Tree();
+		//CommonBuilding* commonBuilding = new CommonBuilding(30, &textures.building.striped);
+		//BuildingCityBlock* cityBlock = new BuildingCityBlock(BuildingType::common);
+		//Cone* cone = new Cone();
+		//ParkCityBlock* parkCityBlock = new ParkCityBlock();
 
 		vector<CityBlock*> cityBlocks;
 
