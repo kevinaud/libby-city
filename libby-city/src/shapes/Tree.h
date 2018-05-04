@@ -13,6 +13,7 @@ public:
 	~Tree() {};
 
 	void draw() {
+        //glClearColor(1.0, 0.0, 0.0, 1.0);
 		for (int i = 0; i < numTiers; i++) {
 			glPushMatrix();
 			glTranslatef(0, 0.5+i, 0);

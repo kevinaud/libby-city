@@ -410,7 +410,7 @@ void initLighting() {
     GLfloat light_diffuse     [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
     GLfloat light_specular    [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* default value */
     GLfloat light_position    [] = { 1.0f, 1.0f, 1.0f, 0.0f };  /* NOT default value */
-    GLfloat lightModel_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };  /* default value */
+    GLfloat lightModel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };  /* default value */
     GLfloat material_specular [] = { 1.0f, 1.0f, 1.0f, 1.0f };  /* NOT default value */
     GLfloat material_emission [] = { 0.5f, 0.5f, 0.5f, 1.0f };  /* default value */
 
